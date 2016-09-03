@@ -146,6 +146,16 @@ class RemoteConsole
     }
 
     /**
+     * Change the current working directory.
+     *
+     * @param string $path
+     */
+    public function cd($path)
+    {
+        $this->workingPath = $path;
+    }
+
+    /**
      * Run command on the remote server
      *
      * @param $command
@@ -209,6 +219,17 @@ class RemoteConsole
         $this->server = new PhpSecLib($this->config);
 
         return $this;
+    }
+
+    /**
+     * Check if command exists in bash.
+     *
+     * @param string $command
+     * @return bool
+     */
+    public function commandExists($command)
+    {
+        return $this->run("if hash $command 2>/dev/null; then echo 'true'; fi")->toBool();
     }
 
     /**
