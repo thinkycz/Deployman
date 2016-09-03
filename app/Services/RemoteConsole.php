@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Deployer\Server\Configuration;
+use Deployer\Server\Local;
 use Deployer\Server\Remote\PhpSecLib;
 use Deployer\Type\Result;
 
@@ -29,8 +30,19 @@ class RemoteConsole
      * @param $host
      * @return static
      */
-    public function connect($host) {
+    public function connectTo($host) {
         $this->config = new Configuration('connection', $host);
+
+        return $this;
+    }
+
+    /**
+     * Get localhost server instance
+     *
+     * @return $this
+     */
+    public function connectToLocalhost() {
+        $this->server = new Local();
 
         return $this;
     }

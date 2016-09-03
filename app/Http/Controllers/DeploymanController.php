@@ -21,7 +21,7 @@ class DeploymanController extends Controller
     }
 
     public function index() {
-        $this->console->connect('raspberrypi.local')->withIdentityFile()->andWithUsername('pi');
+        $this->console->connectTo('raspberrypi.local')->withIdentityFile()->andWithUsername('pi');
 
         $result = $this->console->run('ls -la')->toArray();
 
