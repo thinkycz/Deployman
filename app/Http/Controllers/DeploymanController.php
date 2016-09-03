@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests;
 use App\Services\RemoteConsole;
 
 class DeploymanController extends Controller

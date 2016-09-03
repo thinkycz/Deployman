@@ -19,7 +19,7 @@
 
 @include('partials.header')
 
-<div class="container">
+<div class="container content">
     @yield('content')
 </div><!-- /.container -->
 
