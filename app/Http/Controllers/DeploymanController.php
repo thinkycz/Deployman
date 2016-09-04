@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\DeployHelper;
+use App\Services\BaseDeployer;
 use App\Services\RemoteConsole;
 
 class DeploymanController extends Controller
@@ -12,36 +12,28 @@ class DeploymanController extends Controller
      */
     private $console;
     /**
-     * @var DeployHelper
+     * @var BaseDeployer
      */
-    private $deployHelper;
+    private $baseDeployer;
 
     /**
      * DeploymanController constructor.
      * @param RemoteConsole $console
-     * @param DeployHelper $deployHelper
+     * @param BaseDeployer $baseDeployer
      */
-    public function __construct(RemoteConsole $console, DeployHelper $deployHelper)
+    public function __construct(RemoteConsole $console, BaseDeployer $baseDeployer)
     {
         $this->console = $console;
-        $this->deployHelper = $deployHelper;
+        $this->baseDeployer = $baseDeployer;
     }
 
     public function index() {
         $this->console->connectTo('raspberrypi.local')->withIdentityFile()->andWithUsername('pi');
 
-        $this->deployHelper->init();
+        $this->baseDeployer->init('/var/www/sapaguide_self_deploy');
 
-//        $this->deployHelper->prepareToDeploy();
-//        $this->deployHelper->prepareReleaseFolders();
-//        $this->deployHelper->pullCodeFromGit('https://github.com/thinkycz/SapaGuideAPI');
-//        $this->deployHelper->createSymlinksToSharedResources(['storage']);
-//        $this->deployHelper->makeDirectoriesWritable(['bootstrap/cache', 'storage']);
-//        $this->deployHelper->installVendors();
-//        $this->deployHelper->createSymlinkToCurrent();
+        $result = $this->baseDeployer->getListOfReleases();
 
-        $result = $this->deployHelper->rollbackToPreviousRelease();
-
-        dd($result);
+        return view('deployman.index', compact('result'));
     }
 }

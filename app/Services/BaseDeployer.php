@@ -6,10 +6,10 @@ use RuntimeException;
 
 
 /**
- * Class DeployHelper
+ * Class BaseDeployer
  * @package App\Services
  */
-class DeployHelper
+class BaseDeployer
 {
     /**
      * @var RemoteConsole
@@ -48,7 +48,7 @@ class DeployHelper
     /**
      * @param string $deployPath
      */
-    public function init($deployPath = '/var/www/sapaguide_self_deploy')
+    public function init($deployPath)
     {
         $this->deployPath = $deployPath;
 

@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Services\DeployHelper;
+use App\Services\BaseDeployer;
 use App\Services\RemoteConsole;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Illuminate\Support\ServiceProvider;
@@ -30,8 +30,8 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(IdeHelperServiceProvider::class);
         }
 
-        $this->app->singleton(DeployHelper::class, function () {
-            return new DeployHelper(app(RemoteConsole::class));
+        $this->app->singleton(BaseDeployer::class, function () {
+            return new BaseDeployer(app(RemoteConsole::class));
         });
     }
 }
