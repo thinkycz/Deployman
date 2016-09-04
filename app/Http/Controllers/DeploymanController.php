@@ -23,6 +23,8 @@ class DeploymanController extends Controller
      */
     public function __construct(RemoteConsole $console, BaseDeployer $baseDeployer)
     {
+        $this->middleware('auth');
+
         $this->console = $console;
         $this->baseDeployer = $baseDeployer;
     }

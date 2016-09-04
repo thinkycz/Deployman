@@ -18,3 +18,7 @@ Vue.component('example', require('./components/Example.vue'));
 const app = new Vue({
     el: 'body'
 });
+
+$('.dropdown-toggle').click(function () {
+    $(this).siblings().closest('ul').toggle();
+});

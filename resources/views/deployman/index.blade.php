@@ -1,13 +1,19 @@
-@extends('base')
+@extends('layouts.app')
 
 @section('content')
-    <div class="starter-template">
-        <h1>Bootstrap starter template</h1>
-        <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
-    </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Dashboard</div>
 
-    @foreach($result as $line)
-        {{ $line }}<br>
-    @endforeach
+                    <div class="panel-body">
+                        You are logged in!
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        @foreach($result as $line)
+            {{ $line }}<br>
+        @endforeach
 @endsection
