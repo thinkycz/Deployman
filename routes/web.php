@@ -12,3 +12,7 @@
 */
 
 Route::get('/', 'DeploymanController@index');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index');
