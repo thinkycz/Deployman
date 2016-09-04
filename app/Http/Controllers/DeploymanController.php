@@ -32,8 +32,15 @@ class DeploymanController extends Controller
 
         $this->deployHelper->init();
 
-        $this->deployHelper->prepareReleaseFolders();
-        $result = $this->deployHelper->updateCodeFromGit('git@github.com:thinkycz/hanzi.git');
+//        $this->deployHelper->prepareToDeploy();
+//        $this->deployHelper->prepareReleaseFolders();
+//        $this->deployHelper->pullCodeFromGit('https://github.com/thinkycz/SapaGuideAPI');
+//        $this->deployHelper->createSymlinksToSharedResources(['storage']);
+//        $this->deployHelper->makeDirectoriesWritable(['bootstrap/cache', 'storage']);
+//        $this->deployHelper->installVendors();
+//        $this->deployHelper->createSymlinkToCurrent();
+
+        $result = $this->deployHelper->rollbackToPreviousRelease();
 
         dd($result);
     }
