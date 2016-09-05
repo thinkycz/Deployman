@@ -35,6 +35,18 @@
             </div>
 
             <div class="form-group">
+                <label class="col-md-4 control-label" for="connection">Connection</label>
+                <div class="col-md-4">
+                    <select id="connection" name="connection" class="form-control">
+                        @foreach($connections as $connection)
+                            <option value="{{ $connection->id }}">{{ $connection->name }}</option>
+                        @endforeach
+                    </select>
+                    <span class="help-block">Select a server that will host this project</span>
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label class="col-md-4 control-label" for="path">Deploy path</label>
                 <div class="col-md-4">
                     <input id="path" name="path" type="text" placeholder="eg. /var/www/project" class="form-control input-md" required="">

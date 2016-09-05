@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Connection;
 use App\Helpers\ProjectTypes;
 use App\Project;
 use Illuminate\Http\Request;
@@ -32,7 +33,13 @@ class ProjectsController extends Controller
             ProjectTypes::LARAVEL => 'Laravel'
         ];
 
-        return view('projects.create', compact('supportedProjectTypes'));
+        $connections = Connection::where('user_id', auth()->user()->id)->get();
+
+        if (empty($connections)) {
+            // todo
+        }
+
+        return view('projects.create', compact('supportedProjectTypes', 'connections'));
     }
 
     public function store(Request $request)
@@ -42,7 +49,8 @@ class ProjectsController extends Controller
             'type' => $request->get('project-type'),
             'repository' => $request->get('repository'),
             'path' => $request->get('path'),
-            'user_id' => auth()->user()->id
+            'user_id' => auth()->user()->id,
+            'connection_id' => $request->get('connection')
         ]);
 
         return redirect(action('ProjectsController@index'));

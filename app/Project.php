@@ -8,6 +8,7 @@ class Project extends Model
 {
     protected $fillable = [
         'user_id',
+        'connection_id',
         'name',
         'type',
         'repository',
