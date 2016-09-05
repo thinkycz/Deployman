@@ -32,7 +32,7 @@ class DashboardController extends Controller
     public function index() {
         $this->console->connectTo('raspberrypi.local')->withIdentityFile()->andWithUsername('pi');
 
-        $this->baseDeployer->init('/var/www/sapaguide_self_deploy');
+        $this->baseDeployer->initDirectory('/var/www/sapaguide_self_deploy');
 
         $result = $this->baseDeployer->getListOfReleases();
 

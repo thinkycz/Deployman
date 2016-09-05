@@ -6,6 +6,7 @@ use Deployer\Server\Configuration;
 use Deployer\Server\Local;
 use Deployer\Server\Remote\PhpSecLib;
 use Deployer\Type\Result;
+use Session;
 
 class RemoteConsole
 {
@@ -168,8 +169,15 @@ class RemoteConsole
         }
 
         $output = $this->server->run($command);
+        $result = new Result($output);
 
-        return new Result($output);
+        Session::push('deploy_log', 'COMMAND: ' . $command);
+        foreach ($result->toArray() as $outputLine)
+        {
+            Session::push('deploy_log', $outputLine);
+        }
+
+        return $result;
     }
 
     /**

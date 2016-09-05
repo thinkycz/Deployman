@@ -19,4 +19,9 @@ class Project extends Model
     {
         return $this->belongsTo(Connection::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

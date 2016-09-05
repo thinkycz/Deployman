@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Connection;
 use App\Helpers\ProjectTypes;
 use App\Project;
+use App\Services\LaravelDeployer;
 use App\Services\RemoteConsole;
 use Illuminate\Http\Request;
-
 use App\Http\Requests;
 
 class ProjectsController extends Controller
@@ -72,6 +72,20 @@ class ProjectsController extends Controller
     public function check(Project $project)
     {
         return $this->checkRepositoryConnection($project);
+    }
+
+    public function deploy(Project $project)
+    {
+        $connection = $project->connection;
+        $hostname = $connection->hostname;
+        $username = $connection->username;
+        $password = $connection->password;
+
+        $this->console->connectTo($hostname)->withCredentials($username, $password);
+        $laravel = new LaravelDeployer($this->console);
+        $result = $laravel->deployProject($project);
+
+        dd($result);
     }
 
     private function checkRepositoryConnection(Project $project)

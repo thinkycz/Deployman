@@ -2,7 +2,10 @@
 
 namespace App\Services;
 
+use App\Deploy;
+use App\Project;
 use RuntimeException;
+use Session;
 
 
 /**
@@ -48,7 +51,7 @@ class BaseDeployer
     /**
      * @param string $deployPath
      */
-    public function init($deployPath)
+    public function initDirectory($deployPath)
     {
         $this->deployPath = $deployPath;
 
@@ -98,6 +101,11 @@ class BaseDeployer
     public function getCurrentReleaseFolder()
     {
         return basename($this->getCurrentReleasePath());
+    }
+
+    public function getCurrentCommitHash()
+    {
+        return $this->console->run("cd $this->deployPath/current && git rev-parse HEAD")->toString();
     }
 
     /**
@@ -468,6 +476,24 @@ class BaseDeployer
     }
 
     /////////////// Protected methods
+
+    protected function initDeployLog()
+    {
+        Session::remove('deploy_log');
+    }
+
+    protected function createDeployRecord(Project $project)
+    {
+        $record = Deploy::create([
+            'user_id' => $project->user->id,
+            'project_id' => $project->id,
+            'log' => Session::has('deploy_log') ? json_encode(Session::pull('deploy_log')) : 'logger error',
+            'commit_hash' => '',
+            'folder_name' => $this->getCurrentReleaseFolder()
+        ]);
+
+        return $record;
+    }
 
     /**
      * Whether to use git cache - faster cloning by borrowing objects from existing clones.
