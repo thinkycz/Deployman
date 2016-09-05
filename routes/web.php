@@ -11,6 +11,10 @@
 |
 */
 
-Route::get('/', 'DeploymanController@index');
+Route::get('/', 'DashboardController@index');
+
+Route::resource('connections', 'ConnectionsController');
+Route::resource('projects', 'ProjectsController');
+Route::resource('deploys', 'DeploysController');
 
 Auth::routes();

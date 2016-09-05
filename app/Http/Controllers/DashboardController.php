@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\BaseDeployer;
 use App\Services\RemoteConsole;
 
-class DeploymanController extends Controller
+class DashboardController extends Controller
 {
     /**
      * @var RemoteConsole
