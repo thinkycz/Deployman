@@ -6,7 +6,6 @@ use App\Connection;
 use App\Services\RemoteConsole;
 use Deployer\Server\Configuration;
 use Illuminate\Http\Request;
-
 use App\Http\Requests;
 
 class ConnectionsController extends Controller
@@ -67,10 +66,9 @@ class ConnectionsController extends Controller
         return redirect(action('ConnectionsController@index'));
     }
 
-    public function check($connection)
+    public function check(Connection $connection)
     {
-        $toCheck = Connection::find($connection);
-        return $this->checkSSHConnection($toCheck);
+        return $this->checkSSHConnection($connection);
     }
 
     private function checkSSHConnection(Connection $connection)

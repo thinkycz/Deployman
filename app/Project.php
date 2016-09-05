@@ -14,4 +14,9 @@ class Project extends Model
         'repository',
         'path'
     ];
+
+    public function connection()
+    {
+        return $this->belongsTo(Connection::class);
+    }
 }

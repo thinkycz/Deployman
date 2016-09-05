@@ -19,7 +19,7 @@
         @foreach($projects as $project)
             <tr>
                 <th scope="row">{{ $project->id }}</th>
-                <td>{{ $project->name }}</td>
+                <td><a href="{{ action('ProjectsController@show', $project) }}">{{ $project->name }}</a></td>
                 <td>{{ $project->type }}</td>
                 <td>{{ $project->repository }}</td>
                 <td>{{ $project->path }}</td>

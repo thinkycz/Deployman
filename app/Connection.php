@@ -13,4 +13,9 @@ class Connection extends Model
         'method',
         'username'
     ];
+
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
 }

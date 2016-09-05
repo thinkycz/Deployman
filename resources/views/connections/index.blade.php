@@ -34,10 +34,7 @@
                     <td>{{ $connection->method == 0 ? 'Password' : 'Private key'}}</td>
                     <td>{{ $connection->created_at->diffForHumans() }}</td>
                     <td>
-                        <button class="btn btn-xs btn-primary status" data-status-id="{{ $connection->id }}"
-                                v-on:click="checkConnection({{ $connection->id }})"><span
-                                    class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Connecting ...
-                        </button>
+                        <button class="btn btn-xs btn-primary status" data-status-id="{{ $connection->id }}" v-on:click="checkConnection({{ $connection->id }})"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Connecting ...</button>
                     </td>
                 </tr>
             @endforeach
@@ -53,6 +50,7 @@
         statusBtns.click(function () {
             var id = $(this).attr('data-status-id');
             var btn = $(this);
+
             btn.html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Connecting ...');
             btn.removeClass('btn-danger');
             btn.removeClass('btn-success');
@@ -63,13 +61,12 @@
                 url: '/connections/' + id + '/check'
             }).done(function () {
                 btn.html('Connection successful');
-                btn.removeClass('btn-primary');
                 btn.addClass('btn-success');
-                btn.attr('disabled', false);
             }).fail(function () {
                 btn.html('Connection failed');
-                btn.removeClass('btn-primary');
                 btn.addClass('btn-danger');
+            }).always(function () {
+                btn.removeClass('btn-primary');
                 btn.attr('disabled', false);
             });
         });
