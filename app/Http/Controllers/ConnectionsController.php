@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Connection;
+use App\Services\RemoteConsole;
 use Deployer\Server\Configuration;
 use Illuminate\Http\Request;
 
@@ -10,6 +11,22 @@ use App\Http\Requests;
 
 class ConnectionsController extends Controller
 {
+    /**
+     * @var RemoteConsole
+     */
+    private $console;
+
+    /**
+     * ConnectionsController constructor.
+     * @param RemoteConsole $console
+     */
+    public function __construct(RemoteConsole $console)
+    {
+        $this->middleware('auth');
+
+        $this->console = $console;
+    }
+
     public function index()
     {
         $connections = Connection::where('user_id', auth()->user()->id)->get();
@@ -48,5 +65,29 @@ class ConnectionsController extends Controller
         }
 
         return redirect(action('ConnectionsController@index'));
+    }
+
+    public function check($connection)
+    {
+        $toCheck = Connection::find($connection);
+        return $this->checkSSHConnection($toCheck);
+    }
+
+    private function checkSSHConnection(Connection $connection)
+    {
+        $hostname = $connection->hostname;
+        $username = $connection->username;
+        $password = $connection->password;
+
+        try
+        {
+            $this->console->connectTo($hostname)->withCredentials($username, $password)->run('pwd');
+        }
+        catch (\Exception $e)
+        {
+            return response($e->getMessage(), 400);
+        }
+
+        return response('success');
     }
 }

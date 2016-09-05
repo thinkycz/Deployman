@@ -12,6 +12,7 @@
 */
 
 Route::get('/', 'DashboardController@index');
+Route::get('/connections/{connection}/check', 'ConnectionsController@check');
 
 Route::resource('connections', 'ConnectionsController');
 Route::resource('projects', 'ProjectsController');
