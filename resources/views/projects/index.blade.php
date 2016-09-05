@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="pull-right">
-        <a href="{{ url('/projects/create') }}" class="btn btn-primary">Create a new project</a>
+        <a href="{{ action('ProjectsController@create') }}" class="btn btn-primary">Create a new project</a>
     </div>
 
     <table class="table">

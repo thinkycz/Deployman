@@ -14,6 +14,9 @@ require('laravel-elixir-vue');
  */
 
 elixir(function(mix){
-    mix.sass('app.scss')
-       .webpack('app.js');
+    mix.copy('node_modules/sweetalert/dist/sweetalert.css', 'resources/assets/css/');
+    mix.copy('node_modules/sweetalert/dist/sweetalert.min.js', 'resources/assets/js/');
+    mix.sass('app.scss', 'resources/assets/css/app.css');
+    mix.stylesIn('resources/assets/css');
+    mix.webpack('app.js');
 });

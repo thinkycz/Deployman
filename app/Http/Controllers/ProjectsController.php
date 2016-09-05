@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ProjectTypes;
 use App\Project;
-use Auth;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -21,7 +20,7 @@ class ProjectsController extends Controller
 
     public function index()
     {
-        $projects = Project::where('user_id', Auth::user()->id)->get();
+        $projects = Project::where('user_id', auth()->user()->id)->get();
 
         return view('projects.index', compact('projects'));
     }
@@ -43,7 +42,7 @@ class ProjectsController extends Controller
             'type' => $request->get('project-type'),
             'repository' => $request->get('repository'),
             'path' => $request->get('path'),
-            'user_id' => Auth::user()->id
+            'user_id' => auth()->user()->id
         ]);
 
         return redirect(action('ProjectsController@index'));

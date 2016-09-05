@@ -10,7 +10,7 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    @include('partials.include_header')
+    @include('partials.include_head')
 </head>
 <body>
 
@@ -20,7 +20,7 @@
     @yield('content')
 </div><!-- /.container -->
 
-@include('partials.include_footer')
+@include('partials.include')
 
 </body>
 </html>

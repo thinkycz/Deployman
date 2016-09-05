@@ -24,6 +24,9 @@ class CreateProjectsTable extends Migration
 
             $table->unsignedInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+
+            $table->unsignedInteger('connection_id')->nullable();
+            $table->foreign('connection_id')->references('id')->on('connections')->onDelete('set null');
         });
     }
 

@@ -17,17 +17,20 @@ class CreateConnectionsTable extends Migration
             $table->increments('id');
             $table->timestamps();
 
+            $table->string('name');
+            $table->string('hostname');
             $table->string('method');
             $table->string('username');
-            $table->string('password');
-            $table->string('public_key');
-            $table->string('private_key');
-            $table->string('passphrase');
-            $table->string('config_file');
-            $table->string('pem_file');
 
-            $table->unsignedInteger('project_id')->nullable();
-            $table->foreign('project_id')->references('id')->on('projects')->onDelete('set null');
+            $table->string('password')->nullable();
+            $table->string('public_key')->nullable();
+            $table->string('private_key')->nullable();
+            $table->string('passphrase')->nullable();
+            $table->string('config_file')->nullable();
+            $table->string('pem_file')->nullable();
+
+            $table->unsignedInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 
