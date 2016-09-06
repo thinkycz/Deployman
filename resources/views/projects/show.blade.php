@@ -69,6 +69,38 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Recent deploys</h3>
+                </div>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Revision</th>
+                        <th>Deployed</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($project->deploys as $deploy)
+                        <tr>
+                            <th scope="row">{{ $deploy->id }}</th>
+                            <td><a href="{{ action('DeploysController@show', $deploy) }}">{{ substr($deploy->commit_hash, 0, 7) ?: 'unknown' }}</a></td>
+                            <td>{{ \Carbon\Carbon::parse($deploy->deployed_at, 'Europe/Prague')->diffForHumans() }}</td>
+                            <td>{{ $deploy->created_at->diffInSeconds($deploy->deployed_at) }} seconds</td>
+                            <td><span class="label label-{{ $deploy->deploy_complete ? 'success' : 'danger' }}">{{ $deploy->deploy_complete ? 'Successful' : 'Failed' }}</span></td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
