@@ -18,5 +18,5 @@ elixir(function(mix){
     mix.copy('node_modules/sweetalert/dist/sweetalert.min.js', 'resources/assets/js/');
     mix.sass('app.scss', 'resources/assets/css/app.css');
     mix.stylesIn('resources/assets/css');
-    mix.webpack('app.js');
+    mix.scriptsIn('resources/assets/js');
 });
