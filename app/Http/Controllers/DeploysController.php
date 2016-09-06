@@ -15,4 +15,9 @@ class DeploysController extends Controller
 
         return view('deploys.index', compact('deploys'));
     }
+
+    public function show(Deploy $deploy)
+    {
+        return view('deploys.show', compact('deploy'));
+    }
 }

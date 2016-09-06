@@ -4,8 +4,6 @@ namespace App\Services;
 
 use App\Deploy;
 use App\Project;
-use Carbon\Carbon;
-use DateTime;
 use RuntimeException;
 use Session;
 
@@ -486,7 +484,7 @@ class BaseDeployer
         Session::remove('deploy_log');
     }
 
-    protected function createDeployRecord(Project $project, Carbon $begin = null, $hash = null, $folder = null, $success = true)
+    protected function createDeployRecord(Project $project, $begin = null, $hash = null, $folder = null, $success = true)
     {
         $record = Deploy::create([
             'user_id' => $project->user->id,

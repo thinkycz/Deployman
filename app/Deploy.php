@@ -16,6 +16,10 @@ class Deploy extends Model
         'deployed_at'
     ];
 
+    protected $dates = [
+        'deployed_at'
+    ];
+
     public function project()
     {
         return $this->belongsTo(Project::class);

@@ -15,18 +15,19 @@ class LaravelDeployer extends BaseDeployer
     public function deployProject(Project $project)
     {
         $begin = Carbon::now('Europe/Prague');
+
         try
         {
             $this->initDirectory($project->path);
             $this->initDeployLog();
             $this->deployFrom($project->repository);
+            return $this->createDeployRecord($project, $begin, $this->hash, $this->folder);
         }
         catch (\Exception $e)
         {
             Session::push('deploy_log', 'ERROR: ' . $e->getMessage());
             return $this->createDeployRecord($project, $begin, $this->hash, $this->folder, false);
         }
-        return $this->createDeployRecord($project, $begin, $this->hash, $this->folder);
     }
 
     protected function deployFrom($gitRepo, $sharedRes = ['storage'], $writableDirs = ['bootstrap/cache', 'storage'])
@@ -43,7 +44,7 @@ class LaravelDeployer extends BaseDeployer
         Session::push('deploy_log', 'INFO: Creating symlinks to shared resources');
         $this->createSymlinksToSharedResources($sharedRes);
 
-        Session::push('deploy_log', 'INFO: Changinf directory permissions');
+        Session::push('deploy_log', 'INFO: Setting directory permissions');
         $this->makeDirectoriesWritable($writableDirs);
 
         Session::push('deploy_log', 'INFO: Running composer');

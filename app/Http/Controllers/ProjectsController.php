@@ -83,9 +83,9 @@ class ProjectsController extends Controller
 
         $this->console->connectTo($hostname)->withCredentials($username, $password);
         $laravel = new LaravelDeployer($this->console);
-        $result = $laravel->deployProject($project);
+        $deploy = $laravel->deployProject($project);
 
-        dd($result);
+        return redirect(action('DeploysController@show', $deploy));
     }
 
     private function checkRepositoryConnection(Project $project)
