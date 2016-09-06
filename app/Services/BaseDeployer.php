@@ -218,7 +218,8 @@ class BaseDeployer
      */
     public function prepareReleaseFolders()
     {
-        $this->releasePath = "$this->deployPath/releases/" . $this->getReleaseName();
+        $releaseName = $this->getReleaseName();
+        $this->releasePath = "$this->deployPath/releases/$releaseName";
 
         $i = 0;
         while ($this->console->run("if [ -d $this->releasePath ]; then echo 'true'; fi")->toBool()) {
@@ -231,7 +232,7 @@ class BaseDeployer
 
         $this->console->run("ln -s $this->releasePath $this->deployPath/release");
 
-        return $this->releasePath;
+        return $releaseName;
     }
 
     /**
@@ -284,7 +285,8 @@ class BaseDeployer
             $this->console->run("$git clone $at $depth --recursive -q $repository $this->releasePath 2>&1");
         }
 
-        return $this->releasePath;
+        $currentHash = $this->console->run("cd $this->releasePath && git rev-parse HEAD")->toString();
+        return $currentHash;
     }
 
     /**

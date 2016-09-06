@@ -11,7 +11,7 @@ class DeploysController extends Controller
 {
     public function index()
     {
-        $deploys = Deploy::all();
+        $deploys = Deploy::where('user_id', auth()->user()->id)->get();
 
         return view('deploys.index', compact('deploys'));
     }
