@@ -34,6 +34,12 @@
                     </li>
                     <li class="list-group-item">
                         <div class="row">
+                            <div class="col-md-4 text"><strong>Deploy to:</strong></div>
+                            <div class="col-md-8">{{ $project->connection->name }}</div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="row">
                             <div class="col-md-4 text"><strong>Deploy path:</strong></div>
                             <div class="col-md-8">{{ $project->path }}</div>
                         </div>
@@ -57,7 +63,7 @@
                         <button id="delete-project" data-project-id="{{ $project->id }}" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span> Delete this project</button>
                     </li>
                     <li class="list-group-item">
-                        <button id="deploy" data-project-id="{{ $project->id }}" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-cloud-upload"></span> Deploy !</button>
+                        <button id="deploy" data-project-id="{{ $project->id }}" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-cloud-upload"></span> Deploy now !</button>
                     </li>
                 </ul>
             </div>

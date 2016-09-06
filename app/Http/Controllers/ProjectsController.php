@@ -29,7 +29,7 @@ class ProjectsController extends Controller
 
     public function index()
     {
-        $projects = Project::where('user_id', auth()->user()->id)->get();
+        $projects = auth()->user()->projects;
 
         return view('projects.index', compact('projects'));
     }

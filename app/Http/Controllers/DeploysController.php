@@ -9,9 +9,18 @@ use App\Http\Requests;
 
 class DeploysController extends Controller
 {
+
+    /**
+     * DeploysController constructor.
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index()
     {
-        $deploys = Deploy::where('user_id', auth()->user()->id)->get();
+        $deploys = auth()->user()->deploys;
 
         return view('deploys.index', compact('deploys'));
     }

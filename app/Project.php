@@ -24,4 +24,9 @@ class Project extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function deploys()
+    {
+        return $this->hasMany(Deploy::class);
+    }
 }

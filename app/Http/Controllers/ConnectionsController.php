@@ -28,7 +28,7 @@ class ConnectionsController extends Controller
 
     public function index()
     {
-        $connections = Connection::where('user_id', auth()->user()->id)->get();
+        $connections = auth()->user()->connections;
 
         return view('connections.index', compact('connections'));
     }
