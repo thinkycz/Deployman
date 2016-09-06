@@ -11,6 +11,8 @@ class Deploy extends Model
         'project_id',
         'log',
         'commit_hash',
-        'folder_name'
+        'folder_name',
+        'deploy_complete',
+        'deployed_at'
     ];
 }

@@ -3,15 +3,29 @@
 namespace App\Services;
 
 use App\Project;
+use DateTime;
+use Session;
 
 class LaravelDeployer extends BaseDeployer
 {
     public function deployProject(Project $project)
     {
-        $this->initDirectory($project->path);
-        $this->initDeployLog();
-        $this->deployFrom($project->repository);
-        return $this->createDeployRecord($project);
+        $hash = $folder = null;
+        $begin = new DateTime();
+        try
+        {
+            $this->initDirectory($project->path);
+            $this->initDeployLog();
+            $this->deployFrom($project->repository);
+            $hash = $this->getCurrentCommitHash();
+            $folder = $this->getCurrentReleaseFolder();
+            return $this->createDeployRecord($project, $begin, $hash, $folder);
+        }
+        catch (\Exception $e)
+        {
+            Session::push('deploy_log', 'ERROR: ' . $e->getMessage());
+            return $this->createDeployRecord($project, $begin, $hash, $folder, false);
+        }
     }
 
     protected function deployFrom($gitRepo, $sharedRes = ['storage'], $writableDirs = ['bootstrap/cache', 'storage'])

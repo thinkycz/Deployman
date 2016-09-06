@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Deploy;
 use App\Project;
+use DateTime;
 use RuntimeException;
 use Session;
 
@@ -482,14 +483,16 @@ class BaseDeployer
         Session::remove('deploy_log');
     }
 
-    protected function createDeployRecord(Project $project)
+    protected function createDeployRecord(Project $project, DateTime $begin = null, $hash = null, $folder = null, $success = true)
     {
         $record = Deploy::create([
             'user_id' => $project->user->id,
             'project_id' => $project->id,
             'log' => Session::has('deploy_log') ? json_encode(Session::pull('deploy_log')) : 'logger error',
-            'commit_hash' => '',
-            'folder_name' => $this->getCurrentReleaseFolder()
+            'commit_hash' => $hash,
+            'folder_name' => $folder,
+            'deploy_complete' => $success,
+            'deployed_at' => $begin
         ]);
 
         return $record;

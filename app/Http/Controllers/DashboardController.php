@@ -36,6 +36,6 @@ class DashboardController extends Controller
 
         $result = $this->baseDeployer->getListOfReleases();
 
-        return view('deployman.index', compact('result'));
+        return view('dashboard.index', compact('result'));
     }
 }
