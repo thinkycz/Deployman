@@ -15,4 +15,9 @@ class Deploy extends Model
         'deploy_complete',
         'deployed_at'
     ];
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
 }
