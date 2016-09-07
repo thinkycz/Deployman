@@ -71,6 +71,12 @@
                             <span class="label label-{{ $deploy->status == 'pending' ? 'info' : ($deploy->status == 'running' ? 'warning' : ($deploy->status == 'finished' ? 'success' : 'danger')) }}">
                                 @if($deploy->status == 'running')
                                     <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+                                @elseif($deploy->status == 'pending')
+                                    <span class="glyphicon glyphicon glyphicon-hourglass"></span>
+                                @elseif($deploy->status == 'finished')
+                                    <span class="glyphicon glyphicon-ok"></span>
+                                @elseif($deploy->status == 'failed')
+                                    <span class="glyphicon glyphicon glyphicon-remove"></span>
                                 @endif
                                 {{ ucfirst($deploy->status) }}
                             </span>

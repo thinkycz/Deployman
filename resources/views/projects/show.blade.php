@@ -108,8 +108,16 @@
                             <td><span class="label label-{{ $deploy->status == 'pending' ? 'info' : ($deploy->status == 'running' ? 'warning' : ($deploy->status == 'finished' ? 'success' : 'danger')) }}">
                                     @if($deploy->status == 'running')
                                         <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+                                    @elseif($deploy->status == 'pending')
+                                        <span class="glyphicon glyphicon glyphicon-hourglass"></span>
+                                    @elseif($deploy->status == 'finished')
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    @elseif($deploy->status == 'failed')
+                                        <span class="glyphicon glyphicon glyphicon-remove"></span>
                                     @endif
-                                    {{ ucfirst($deploy->status) }}</span></td>
+                                    {{ ucfirst($deploy->status) }}
+                                </span>
+                            </td>
                         </tr>
                     @endforeach
                     </tbody>
@@ -122,8 +130,8 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="alert alert-info text-center" role="alert">
-                    <h3>Please wait</h3>
-                    <p>Loading the terminal via Ajax</p>
+                    <h3><span class="glyphicon glyphicon glyphicon-hourglass"></span> Please wait</h3>
+                    <p>Connecting to the server and getting logs.</p>
                 </div>
             </div>
         </div>
@@ -188,6 +196,7 @@
             var table = $('table#deploys').find('tr:last');
             var dialog = $("#dialog");
             var finished = false;
+            var dialogDefaultText = dialog.html();
 
             var startDeployment = function (deploy) {
                 $.ajax({
@@ -218,7 +227,7 @@
                         '<td><a href="/deploys/' + data.id + '">unknown</a></td>' +
                         '<td>now</td>' +
                         '<td>* seconds</td>' +
-                        '<td><span class="label label-info">Pending</span></td>' +
+                        '<td><span class="label label-info"><span class="glyphicon glyphicon glyphicon-hourglass"></span> Pending</span></td>' +
                         '</tr>'
                 );
                 dialog.dialog('open');
@@ -228,6 +237,7 @@
                     if (finished) clearInterval(loop);
                     dialog.on("dialogclose", function () {
                         clearInterval(loop)
+                        dialog.html(dialogDefaultText);
                     });
                 }, 2000);
             }).always(function () {

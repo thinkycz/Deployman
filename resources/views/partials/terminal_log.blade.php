@@ -7,7 +7,7 @@
         <div class="col-md-12">
             @if($queue)
                 <div class="alert alert-warning text-center" role="alert">
-                    <h3>Your deploy has been queued</h3>
+                    <h3><span class="glyphicon glyphicon glyphicon-hourglass"></span> Your deploy has been queued</h3>
                     <p>You can close this window and check the status later in the deploys section.</p>
                 </div>
             @elseif($deploy->status == 'running')
@@ -17,13 +17,13 @@
                 </div>
             @elseif($deploy->status == 'finished')
                 <div class="alert alert-success text-center" role="alert">
-                    <h3>Deployment successful</h3>
-                    <p>You can close this window and check the status later in the deploys section.</p>
+                    <h3><span class="glyphicon glyphicon-ok"></span> Deployment successful</h3>
+                    <p>You can close this window and check full terminal log in the deploys section.</p>
                 </div>
             @elseif($deploy->status == 'failed')
                 <div class="alert alert-alert text-center" role="alert">
-                    <h3>Deployment failed</h3>
-                    <p>You can close this window and check the status later in the deploys section.</p>
+                    <h3><span class="glyphicon glyphicon glyphicon-remove"></span> Deployment failed</h3>
+                    <p>You can close this window and check full terminal log in the deploys section.</p>
                 </div>
             @endif
         </div>
