@@ -30,11 +30,13 @@ class LaravelDeployer extends BaseDeployer
         }
         catch (Exception $e)
         {
+            $this->deploy->setFinished();
             $this->deploy->setStatus(DeployStatus::FAILED);
             $this->deploy->addToLog('ERROR: ' . $e->getMessage());
             return $this->deploy;
         }
 
+        $this->deploy->setFinished();
         $this->deploy->setStatus(DeployStatus::FINISHED);
         $this->deploy->setDeployComplete(true);
         $this->deploy->addToLog('SUCCESS: The project has been successfully deployed.');

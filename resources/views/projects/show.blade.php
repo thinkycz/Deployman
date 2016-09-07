@@ -92,7 +92,7 @@
                             <th scope="row">{{ $deploy->id }}</th>
                             <td><a href="{{ action('DeploysController@show', $deploy) }}">{{ substr($deploy->commit_hash, 0, 7) ?: 'unknown' }}</a></td>
                             <td>{{ $deploy->created_at->diffForHumans() }}</td>
-                            <td>{{ $deploy->deploy_complete ? $deploy->created_at->diffInSeconds($deploy->completed_at) : '*' }} seconds</td>
+                            <td>{{ $deploy->deploy_complete ? $deploy->created_at->diffInSeconds($deploy->finished_at) : '*' }} seconds</td>
                             <td>{{ $deploy->status }}</td>
                         </tr>
                     @endforeach

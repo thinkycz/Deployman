@@ -23,7 +23,7 @@ class CreateDeploysTable extends Migration
 
             $table->text('log')->nullable();
             $table->string('commit_hash')->nullable();
-            $table->timestamp('completed_at')->nullable();
+            $table->timestamp('finished_at')->nullable();
 
             $table->unsignedInteger('project_id')->nullable();
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('set null');

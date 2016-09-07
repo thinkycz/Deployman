@@ -55,13 +55,13 @@
                 <li class="list-group-item">
                     <div class="row">
                         <div class="col-md-4 text"><strong>Finished at:</strong></div>
-                        <div class="col-md-8">{{ $deploy->completed_at ? $deploy->completed_at->format('j.n.Y G:i:s') : 'Not finished yet' }}</div>
+                        <div class="col-md-8">{{ $deploy->finished_at ? $deploy->finished_at->format('j.n.Y G:i:s') : 'Not finished yet' }}</div>
                     </div>
                 </li>
                 <li class="list-group-item">
                     <div class="row">
                         <div class="col-md-4 text"><strong>Duration:</strong></div>
-                        <div class="col-md-8">{{ $deploy->completed_at ? $deploy->created_at->diffInSeconds($deploy->completed_at) . 'seconds' : 'Not finished yet' }}</div>
+                        <div class="col-md-8">{{ $deploy->finished_at ? $deploy->created_at->diffInSeconds($deploy->finished_at) . 'seconds' : 'Not finished yet' }}</div>
                     </div>
                 </li>
                 <li class="list-group-item">

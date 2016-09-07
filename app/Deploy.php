@@ -14,7 +14,7 @@ class Deploy extends Model
     ];
 
     protected $dates = [
-        'completed_at'
+        'finished_at'
     ];
 
     /**
@@ -62,6 +62,12 @@ class Deploy extends Model
     public function setDeployComplete($complete)
     {
         $this->deploy_complete = $complete;
+        $this->save();
+    }
+
+    public function setFinished($time = null)
+    {
+        $this->finished_at = $time ?: Carbon::now();
         $this->save();
     }
 }
