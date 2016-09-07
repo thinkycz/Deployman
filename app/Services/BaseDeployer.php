@@ -32,6 +32,11 @@ class BaseDeployer
     protected $deploy;
 
     /**
+     * @return Deploy
+     */
+    abstract public function run();
+
+    /**
      * DeployHelper constructor.
      * @param RemoteConsole $console
      * @param Deploy $deploy

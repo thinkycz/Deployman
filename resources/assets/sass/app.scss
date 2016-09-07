@@ -12,3 +12,19 @@
   from { transform: scale(1) rotate(0deg);}
   to { transform: scale(1) rotate(360deg);}
 }
+
+.navbar-brand {
+  padding: 13px 15px;
+}
+
+.navbar-nav {
+  margin-left: 20px;
+}
+
+.navbar-static-top {
+  z-index: 100;
+}
+
+.active {
+  background-color: lightgray;
+}

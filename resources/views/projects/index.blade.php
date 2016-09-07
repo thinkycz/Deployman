@@ -12,6 +12,7 @@
             <th>Name</th>
             <th>Type</th>
             <th>Repository</th>
+            <th>Path</th>
             <th>Active revision</th>
         </tr>
         </thead>
@@ -20,7 +21,7 @@
             <tr>
                 <th scope="row">{{ $project->id }}</th>
                 <td><a href="{{ action('ProjectsController@show', $project) }}">{{ $project->name }}</a></td>
-                <td>{{ $project->type }}</td>
+                <td>{{ ucfirst($project->type) }}</td>
                 <td>{{ $project->repository }}</td>
                 <td>{{ $project->path }}</td>
             </tr>

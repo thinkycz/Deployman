@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Deploy;
+use App\Helpers\ProjectType;
+use App\Project;
+use App\Services\BaseDeployer;
 use App\Services\LaravelDeployer;
 use App\Services\RemoteConsole;
+use App\Services\StaticPagesDeployer;
 
 class DeploysController extends Controller
 {
@@ -38,8 +42,10 @@ class DeploysController extends Controller
     public function fire(Deploy $deploy)
     {
         if (Deploy::where('status', 'running')->get()->isEmpty()) {
+
             $this->console->useConnectionObject($deploy->project->connection);
-            $deployer = new LaravelDeployer($this->console, $deploy);
+            $deployer = $this->determineProjectDeployer($deploy);
+
         } else {
             sleep(5);
             $this->fire($deploy);
@@ -57,5 +63,22 @@ class DeploysController extends Controller
             'deploy' => $deploy,
             'queue' => $queue
         ];
+    }
+
+    /**
+     * @param Deploy $deploy
+     * @return BaseDeployer
+     */
+    private function determineProjectDeployer(Deploy $deploy)
+    {
+        switch ($deploy->project->type)
+        {
+            case ProjectType::LARAVEL:
+                return new LaravelDeployer($this->console, $deploy);
+            case ProjectType::STATIC_PAGES:
+                return new StaticPagesDeployer($this->console, $deploy);
+            default:
+                return new BaseDeployer($this->console, $deploy);
+        }
     }
 }

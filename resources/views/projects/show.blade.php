@@ -23,7 +23,7 @@
                     <li class="list-group-item">
                         <div class="row">
                             <div class="col-md-4 text"><strong>Project type:</strong></div>
-                            <div class="col-md-8">{{ $project->type }}</div>
+                            <div class="col-md-8">{{ ucfirst($project->type) }}</div>
                         </div>
                     </li>
                     <li class="list-group-item">
@@ -85,7 +85,6 @@
                 </div>
 
                 <table class="table" id="deploys">
-                    <thead>
                     <tr>
                         <th>#</th>
                         <th>Revision</th>
@@ -93,8 +92,6 @@
                         <th>Duration</th>
                         <th>Status</th>
                     </tr>
-                    </thead>
-                    <tbody>
                     @foreach($project->deploys()->latest()->get() as $deploy)
                         <tr>
                             <th scope="row">{{ $deploy->id }}</th>
@@ -121,7 +118,6 @@
                             </td>
                         </tr>
                     @endforeach
-                    </tbody>
                 </table>
             </div>
         </div>
@@ -224,7 +220,7 @@
             var btn = $(this);
             var project = $(this).attr('data-project-id');
             var text = $(this).html();
-            var table = $('table#deploys tbody').find('tr:first');
+            var table = $('table#deploys').find('tr:first');
             var dialog = $("#dialog");
             var finished = false;
             var dialogDefaultText = dialog.html();
@@ -252,7 +248,7 @@
             $.ajax({
                 url: '/projects/' + project + '/deploy'
             }).done(function (data) {
-                table.before(
+                table.after(
                         '<tr>' +
                         '<th>' + data.id + '</th>' +
                         '<td><a href="/deploys/' + data.id + '">unknown</a></td>' +

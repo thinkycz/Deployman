@@ -12,17 +12,17 @@
 
             <!-- Branding Image -->
             <a class="navbar-brand" href="{{ action('DashboardController@index') }}">
-                {{ config('app.name', 'Laravel') }}
+                <span class="glyphicon glyphicon-tasks"></span> <strong>{{ config('app.name', 'Laravel') }}</strong>
             </a>
         </div>
 
         <div class="collapse navbar-collapse" id="app-navbar-collapse">
             <!-- Left Side Of Navbar -->
             <ul class="nav navbar-nav">
-                <li><a href="{{ action('DashboardController@index') }}">Dashboard</a></li>
-                <li><a href="{{ action('ConnectionsController@index') }}">Connections</a></li>
-                <li><a href="{{ action('ProjectsController@index') }}">Projects</a></li>
-                <li><a href="{{ action('DeploysController@index') }}">Deploys</a></li>
+                <li class="{{ strpos(Route::currentRouteAction(), 'DashboardController') ? 'active' : '' }}"><a href="{{ action('DashboardController@index') }}"><span class="glyphicon glyphicon-home"></span> Dashboard</a></li>
+                <li class="{{ strpos(Route::currentRouteAction(), 'ConnectionsController') ? 'active' : '' }}"><a href="{{ action('ConnectionsController@index') }}"><span class="glyphicon glyphicon-transfer"></span> Connections</a></li>
+                <li class="{{ strpos(Route::currentRouteAction(), 'ProjectsController') ? 'active' : '' }}"><a href="{{ action('ProjectsController@index') }}"><span class="glyphicon glyphicon-folder-open"></span> Projects</a></li>
+                <li class="{{ strpos(Route::currentRouteAction(), 'DeploysController') ? 'active' : '' }}"><a href="{{ action('DeploysController@index') }}"><span class="glyphicon glyphicon-cloud-upload"></span> Deploys</a></li>
             </ul>
 
             <!-- Right Side Of Navbar -->
@@ -33,7 +33,7 @@
                     <li><a href="{{ action('Auth\RegisterController@register') }}">Register</a></li>
                 @else
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ Auth::user()->name }} <span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-user"></span> {{ Auth::user()->name }} <span class="caret"></span></a>
 
                         <ul class="dropdown-menu" role="menu">
                             <li><a>My profile</a></li>
