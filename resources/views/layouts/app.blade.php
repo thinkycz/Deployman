@@ -24,5 +24,7 @@
 
 @yield('scripts')
 
+@include('partials.flash')
+
 </body>
 </html>

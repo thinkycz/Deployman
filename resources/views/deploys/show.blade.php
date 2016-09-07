@@ -67,15 +67,13 @@
                 <li class="list-group-item">
                     <div class="row">
                         <div class="col-md-4 text"><strong>Status:</strong></div>
-                        <div class="col-md-8">{{ $deploy->status }}</div>
+                        <div class="col-md-8"><span class="label label-{{ $deploy->status == 'pending' ? 'info' : ($deploy->status == 'running' ? 'warning' : ($deploy->status == 'finished' ? 'success' : 'danger')) }}">{{ ucfirst($deploy->status) }}</span></div>
                     </div>
                 </li>
                 <li class="list-group-item">
                     <div class="row">
                         <div class="col-md-4 text"><strong>Result:</strong></div>
-                        <div class="col-md-8"><span
-                                    class="label label-{{ $deploy->deploy_complete ? 'success' : 'danger' }}">{{ $deploy->deploy_complete ? 'Successfully deployed' : 'Deploy script not completed' }}</span>
-                        </div>
+                        <div class="col-md-8"><span class="label label-{{ $deploy->deploy_complete ? 'success' : 'danger' }}">{{ $deploy->deploy_complete ? 'Successfully deployed' : 'Deploy script not completed' }}</span></div>
                     </div>
                 </li>
             </div>
@@ -83,7 +81,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <div class="panel panel-default panel-{{ $deploy->deploy_complete ? 'success' : 'danger' }}">
+            <div class="panel panel-default panel-{{ $deploy->status == 'pending' ? 'info' : ($deploy->status == 'running' ? 'warning' : ($deploy->status == 'finished' ? 'success' : 'danger')) }}">
                 <div class="panel-heading">
                     <h3 class="panel-title">Terminal log</h3>
                 </div>
@@ -94,7 +92,7 @@
                                 <tr>
                                     @if(strpos($line, 'INFO') !== false)
                                         <td class="text-primary"><strong>{{ $line }}</strong></td>
-                                    @elseif(strpos($line, 'COMMAND') !== false)
+                                    @elseif(strpos($line, 'COMMAND') !== false or strpos($line, 'SUCCESS') !== false)
                                         <td class="text-success"><strong>{{ $line }}</strong></td>
                                     @elseif(strpos($line, 'ERROR') !== false)
                                         <td class="text-danger"><strong>{{ $line }}</strong></td>

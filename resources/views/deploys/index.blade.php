@@ -18,7 +18,7 @@
                 <td><a href="{{ action('DeploysController@show', $deploy) }}">{{ $deploy->project->name }} (rev. {{ substr($deploy->commit_hash, 0, 7) ?: 'unknown' }})</a></td>
                 <td>{{ $deploy->created_at->diffForHumans() }}</td>
                 <td>{{ $deploy->deploy_complete ? $deploy->created_at->diffInSeconds($deploy->finished_at) : '*' }} seconds</td>
-                <td><span class="label label-{{ $deploy->deploy_complete ? 'success' : 'danger' }}">{{ $deploy->deploy_complete ? 'Complete' : 'Incomplete' }}</span></td>
+                <td><span class="label label-{{ $deploy->status == 'pending' ? 'info' : ($deploy->status == 'running' ? 'warning' : ($deploy->status == 'finished' ? 'success' : 'danger')) }}">{{ ucfirst($deploy->status) }}</span></td>
             </tr>
         @endforeach
         </tbody>

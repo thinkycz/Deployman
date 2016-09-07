@@ -6,6 +6,7 @@ use App\Deploy;
 use App\Helpers\ProjectType;
 use App\Project;
 use App\Services\RemoteConsole;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
 class ProjectsController extends Controller
@@ -44,10 +45,12 @@ class ProjectsController extends Controller
             ProjectType::LARAVEL => 'Laravel'
         ];
 
+        /** @var Collection $connections */
         $connections = auth()->user()->connections;
 
-        if (empty($connections)) {
-            // todo
+        if ($connections->isEmpty()) {
+            flash('You have no connections!', 'warning');
+            return redirect(action('ConnectionsController@index'));
         }
 
         return view('projects.create', compact('supportedProjectTypes', 'connections'));
