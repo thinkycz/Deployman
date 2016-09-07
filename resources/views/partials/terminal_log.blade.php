@@ -25,6 +25,11 @@
                     <h3><span class="glyphicon glyphicon glyphicon-remove"></span> Deployment failed</h3>
                     <p>You can close this window and check full terminal log in the deploys section.</p>
                 </div>
+            @else
+                <div class="alert alert-info text-center" role="alert">
+                    <h3><span class="glyphicon glyphicon glyphicon-hourglass"></span> Please wait</h3>
+                    <p>Connecting to the server and getting logs.</p>
+                </div>
             @endif
         </div>
     </div>
@@ -44,7 +49,7 @@
                                 @if(strpos($line, 'INFO') !== false)
                                     <td class="text-primary"><strong>{{ $line }}</strong></td>
                                 @elseif(strpos($line, 'COMMAND') !== false or strpos($line, 'SUCCESS') !== false)
-                                        <td class="text-success"><strong>{{ $line }}</strong></td>
+                                    <td class="text-success"><strong>{{ $line }}</strong></td>
                                 @elseif(strpos($line, 'ERROR') !== false)
                                     <td class="text-danger"><strong>{{ $line }}</strong></td>
                                 @else

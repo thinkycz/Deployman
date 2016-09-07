@@ -195,6 +195,12 @@
 
             dialog.dialog('open');
 
+            var startDeployment = function (deploy) {
+                $.ajax({
+                    url: '/deploys/' + deploy + '/fire'
+                });
+            };
+
             var updateStatus = function (deploy) {
                 $.ajax({
                     url: '/deploys/' + deploy + '/status'
@@ -202,6 +208,8 @@
                     dialog.html(data.html);
                     if (data.deploy.status == 'finished' || data.deploy.status == 'failed') {
                         finished = true;
+                    } else if (data.deploy.status == 'pending') {
+                        startDeployment(deploy);
                     }
                 });
             };
