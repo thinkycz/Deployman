@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Deploy;
+use App\Helpers\DeployStatus;
 use RuntimeException;
 
 /**
@@ -34,7 +35,13 @@ class BaseDeployer
     /**
      * @return Deploy
      */
-    abstract public function run();
+    public function run()
+    {
+        $this->deploy->setFinished();
+        $this->deploy->setStatus(DeployStatus::FAILED);
+        $this->deploy->addToLog('ERROR: This project type is not supported.');
+        return $this->deploy;
+    }
 
     /**
      * DeployHelper constructor.
