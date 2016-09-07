@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Helpers\DeployStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
@@ -28,7 +29,7 @@ class Deploy extends Model
             'updated_at' => $now,
             'folder_name' => $now->format('YmdHis'),
             'deploy_complete' => false,
-            'status' => 'pending'
+            'status' => DeployStatus::PENDING
         ]);
 
         parent::__construct($attributes);
@@ -49,6 +50,18 @@ class Deploy extends Model
         $log = unserialize($this->log);
         $log[] = $line;
         $this->log = serialize($log);
+        $this->save();
+    }
+
+    public function setStatus($status)
+    {
+        $this->status = $status;
+        $this->save();
+    }
+
+    public function setDeployComplete($complete)
+    {
+        $this->deploy_complete = $complete;
         $this->save();
     }
 }

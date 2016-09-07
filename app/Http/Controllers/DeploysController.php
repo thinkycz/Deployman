@@ -37,14 +37,9 @@ class DeploysController extends Controller
 
     public function fire(Deploy $deploy)
     {
-        $connection = $deploy->project->connection;
-        $hostname = $connection->hostname;
-        $username = $connection->username;
-        $password = $connection->password;
-
-        $this->console->connectTo($hostname)->withCredentials($username, $password);
+        $this->console->useConnectionObject($deploy->project->connection);
         $deployer = new LaravelDeployer($this->console, $deploy);
 
-        return $deployer->createSymlinkToCurrent();
+        return $deployer->run();
     }
 }

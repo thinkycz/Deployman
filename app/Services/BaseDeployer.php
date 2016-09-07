@@ -25,10 +25,11 @@ class BaseDeployer
      * @var string
      */
     protected $releasePath;
+
     /**
      * @var Deploy
      */
-    private $deploy;
+    protected $deploy;
 
     /**
      * DeployHelper constructor.
@@ -221,6 +222,8 @@ class BaseDeployer
      */
     public function prepareToDeploy()
     {
+        $this->deploy->addToLog('INFO: Checking requirements. Preparing server to deploy.');
+
         $this->console->getServer()->connect();
 
         // Check if shell is POSIX-compliant
@@ -263,6 +266,8 @@ class BaseDeployer
      */
     public function prepareReleaseFolders()
     {
+        $this->deploy->addToLog('INFO: Preparing release folders.');
+
         $i = 0;
         while ($this->console->runAndLog("if [ -d $this->releasePath ]; then echo 'true'; fi", $this->deploy)->toBool()) {
             $this->releasePath .= '.' . ++$i;
@@ -287,6 +292,8 @@ class BaseDeployer
      */
     public function pullCodeFromGit($branch = '', $tag = '', $revision = '')
     {
+        $this->deploy->addToLog('INFO: Pulling code from Git repository.');
+
         $repository = $this->deploy->project->repository;
         $git = $this->getGitBinary();
         $gitCache = $this->useGitCache();
@@ -331,11 +338,9 @@ class BaseDeployer
      * @return Deploy
      * @throws \Exception
      */
-    public function copyDirectories($dirs)
+    public function copyDirectories($dirs = [])
     {
-        if (!$this->releasePath) {
-            throw new \Exception("You must prepare release folders first.");
-        }
+        $this->deploy->addToLog('INFO: Copying selected directories.');
 
         foreach ($dirs as $dir) {
             // Delete directory if exists.
@@ -357,9 +362,7 @@ class BaseDeployer
      */
     public function createSymlinksToSharedResources($dirs = [], $files = [])
     {
-        if (!$this->releasePath) {
-            throw new \Exception("You must prepare release folders first.");
-        }
+        $this->deploy->addToLog('INFO: Creating symbolic links to shared directories.');
 
         $sharedPath = "$this->deployPath/shared";
 
@@ -410,6 +413,8 @@ class BaseDeployer
      */
     public function makeDirectoriesWritable($directories = [], $useSudo = true, $customHttpUser = null)
     {
+        $this->deploy->addToLog('INFO: Changing ownership and permissions of directories.');
+
         $dirs = join(' ', $directories);
         $sudo = $useSudo ? 'sudo' : '';
         $httpUser = $customHttpUser;
@@ -481,9 +486,7 @@ class BaseDeployer
      */
     public function installVendors($environmentVariables = null, $composerOptions = 'install --no-dev --verbose --prefer-dist --optimize-autoloader --no-progress --no-interaction')
     {
-        if (!$this->releasePath) {
-            throw new \Exception("You must prepare release folders first.");
-        }
+        $this->deploy->addToLog('INFO: Running composer.');
 
         $composer = $this->getComposerBinary();
         $envVars = $environmentVariables ? 'export ' . $environmentVariables . ' &&' : '';
@@ -500,9 +503,7 @@ class BaseDeployer
      */
     public function createSymlinkToCurrent()
     {
-        if (!$this->releasePath) {
-            throw new \Exception("You must prepare release folders first.");
-        }
+        $this->deploy->addToLog('INFO: Linking this release to the `current` directory.');
 
         $this->console->runAndLog("cd $this->deployPath && ln -sfn $this->releasePath current", $this->deploy); // Atomic override symlink.
         $this->console->runAndLog("cd $this->deployPath && rm release", $this->deploy); // Remove release link.

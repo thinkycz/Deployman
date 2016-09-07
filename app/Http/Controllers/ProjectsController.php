@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Deploy;
-use App\Helpers\ProjectTypes;
+use App\Helpers\ProjectType;
 use App\Project;
 use App\Services\RemoteConsole;
 use Illuminate\Http\Request;
@@ -40,8 +40,8 @@ class ProjectsController extends Controller
     public function create()
     {
         $supportedProjectTypes = [
-            ProjectTypes::STATIC_PAGES => 'Static pages',
-            ProjectTypes::LARAVEL => 'Laravel'
+            ProjectType::STATIC_PAGES => 'Static pages',
+            ProjectType::LARAVEL => 'Laravel'
         ];
 
         $connections = auth()->user()->connections;

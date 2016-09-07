@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-class ProjectTypes
+class ProjectType
 {
     const STATIC_PAGES = 'static';
     const LARAVEL = 'laravel';

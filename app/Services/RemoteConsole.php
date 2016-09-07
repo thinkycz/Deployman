@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Connection;
 use App\Deploy;
 use Deployer\Server\Configuration;
 use Deployer\Server\Local;
@@ -46,6 +47,11 @@ class RemoteConsole
         $this->server = new Local();
 
         return $this;
+    }
+
+    public function useConnectionObject(Connection $connection) {
+        //todo connection methods
+        return $this->connectTo($connection->hostname)->withCredentials($connection->username, $connection->password);
     }
 
     /**
