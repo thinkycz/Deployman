@@ -105,7 +105,8 @@
                             <td>{{ $deploy->deploy_complete ? $deploy->created_at->diffInSeconds($deploy->finished_at) : '*' }}
                                 seconds
                             </td>
-                            <td><span class="label label-{{ $deploy->status == 'pending' ? 'info' : ($deploy->status == 'running' ? 'warning' : ($deploy->status == 'finished' ? 'success' : 'danger')) }}">
+                            <td>
+                                <button class="showStatusWindow btn btn-xs btn-{{ $deploy->status == 'pending' ? 'info' : ($deploy->status == 'running' ? 'warning' : ($deploy->status == 'finished' ? 'success' : 'danger')) }}" data-deploy-id="{{ $deploy->id }}">
                                     @if($deploy->status == 'running')
                                         <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
                                     @elseif($deploy->status == 'pending')
@@ -116,7 +117,7 @@
                                         <span class="glyphicon glyphicon glyphicon-remove"></span>
                                     @endif
                                     {{ ucfirst($deploy->status) }}
-                                </span>
+                                </button>
                             </td>
                         </tr>
                     @endforeach
@@ -149,6 +150,7 @@
                 title: "Deployment in progress"
             });
         });
+
         $('#test-server').click(function () {
             var btn = $(this);
             var id = $(this).attr('data-project-id');
@@ -189,6 +191,35 @@
             });
         });
 
+        $('.showStatusWindow').click(function () {
+            var deploy = $(this).attr('data-deploy-id');
+            var dialog = $("#dialog");
+            var dialogDefaultText = dialog.html();
+            var finished = false;
+
+            dialog.dialog('open');
+
+            var updateStatus = function (deploy) {
+                $.ajax({
+                    url: '/deploys/' + deploy + '/status'
+                }).done(function (data) {
+                    dialog.html(data.html);
+                    if (data.deploy.status == 'finished' || data.deploy.status == 'failed') {
+                        finished = true;
+                    }
+                });
+            };
+
+            var loop = setInterval(function () {
+                updateStatus(deploy);
+                if (finished) clearInterval(loop);
+                dialog.on("dialogclose", function () {
+                    clearInterval(loop);
+                    dialog.html(dialogDefaultText);
+                });
+            }, 2000);
+        });
+
         $('#deploy-now').click(function () {
             var btn = $(this);
             var project = $(this).attr('data-project-id');
@@ -197,6 +228,9 @@
             var dialog = $("#dialog");
             var finished = false;
             var dialogDefaultText = dialog.html();
+
+            btn.html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Please wait ...');
+            btn.attr('disabled', true);
 
             var startDeployment = function (deploy) {
                 $.ajax({
@@ -214,9 +248,6 @@
                     }
                 });
             };
-
-            btn.html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Please wait ...');
-            btn.attr('disabled', true);
 
             $.ajax({
                 url: '/projects/' + project + '/deploy'
@@ -236,7 +267,7 @@
                     updateStatus(data.id);
                     if (finished) clearInterval(loop);
                     dialog.on("dialogclose", function () {
-                        clearInterval(loop)
+                        clearInterval(loop);
                         dialog.html(dialogDefaultText);
                     });
                 }, 2000);

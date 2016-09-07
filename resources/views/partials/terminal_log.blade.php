@@ -21,7 +21,7 @@
                     <p>You can close this window and check full terminal log in the deploys section.</p>
                 </div>
             @elseif($deploy->status == 'failed')
-                <div class="alert alert-alert text-center" role="alert">
+                <div class="alert alert-danger text-center" role="alert">
                     <h3><span class="glyphicon glyphicon glyphicon-remove"></span> Deployment failed</h3>
                     <p>You can close this window and check full terminal log in the deploys section.</p>
                 </div>
