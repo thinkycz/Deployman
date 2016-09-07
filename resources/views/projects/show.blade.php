@@ -91,9 +91,9 @@
                         <tr>
                             <th scope="row">{{ $deploy->id }}</th>
                             <td><a href="{{ action('DeploysController@show', $deploy) }}">{{ substr($deploy->commit_hash, 0, 7) ?: 'unknown' }}</a></td>
-                            <td>{{ \Carbon\Carbon::parse($deploy->deployed_at, 'Europe/Prague')->diffForHumans() }}</td>
-                            <td>{{ $deploy->created_at->diffInSeconds($deploy->deployed_at) }} seconds</td>
-                            <td><span class="label label-{{ $deploy->deploy_complete ? 'success' : 'danger' }}">{{ $deploy->deploy_complete ? 'Successful' : 'Failed' }}</span></td>
+                            <td>{{ $deploy->created_at->diffForHumans() }}</td>
+                            <td>{{ $deploy->deploy_complete ? $deploy->created_at->diffInSeconds($deploy->completed_at) : '*' }} seconds</td>
+                            <td><span class="label label-{{ $deploy->deploy_complete ? 'success' : 'danger' }}">{{ $deploy->deploy_complete ? 'Complete' : 'Incomplete' }}</span></td>
                         </tr>
                     @endforeach
                     </tbody>
@@ -103,7 +103,7 @@
     </div>
 
     <div id="dialog" title="Basic dialog">
-        <p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
+        {{-- Handled by javascript--}}
     </div>
 @endsection
 
@@ -148,8 +148,11 @@
                 btn.attr('disabled', false);
             });
         });
+
         $(document).ready( function() {
-            $( "#dialog" ).dialog();
+            $( "#dialog" ).dialog({
+                autoOpen: false
+            });
         });
     </script>
 @endsection

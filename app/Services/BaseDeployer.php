@@ -22,16 +22,6 @@ class BaseDeployer
     /**
      * @var string
      */
-    protected $php;
-
-    /**
-     * @var string
-     */
-    protected $git;
-
-    /**
-     * @var string
-     */
     protected $deployPath;
 
     /**
@@ -42,21 +32,13 @@ class BaseDeployer
     /**
      * DeployHelper constructor.
      * @param RemoteConsole $console
+     * @param Deploy $deploy
      */
-    public function __construct(RemoteConsole $console)
+    public function __construct(RemoteConsole $console, Deploy $deploy)
     {
         $this->console = $console;
-    }
-
-    /**
-     * @param string $deployPath
-     */
-    public function initDirectory($deployPath)
-    {
-        $this->deployPath = $deployPath;
-
-        $this->php = $this->getPHPBinary();
-        $this->git = $this->getGitBinary();
+        $this->deployPath = $deploy->project->path;
+        $this->releasePath = "$this->deployPath/releases/$deploy->folder_name";
     }
 
     /**
@@ -217,9 +199,6 @@ class BaseDeployer
      */
     public function prepareReleaseFolders()
     {
-        $releaseName = $this->getReleaseName();
-        $this->releasePath = "$this->deployPath/releases/$releaseName";
-
         $i = 0;
         while ($this->console->run("if [ -d $this->releasePath ]; then echo 'true'; fi")->toBool()) {
             $this->releasePath .= '.' . ++$i;
@@ -231,7 +210,7 @@ class BaseDeployer
 
         $this->console->run("ln -s $this->releasePath $this->deployPath/release");
 
-        return $releaseName;
+        return true;
     }
 
     /**
@@ -253,7 +232,7 @@ class BaseDeployer
             throw new \Exception("You must prepare release folders first.");
         }
 
-        $git = $this->git;
+        $git = $this->getGitBinary();
         $gitCache = $this->useGitCache();
         $depth = $gitCache ? '' : '--depth 1';
 
@@ -506,7 +485,8 @@ class BaseDeployer
      */
     protected function useGitCache()
     {
-        $gitVersion = $this->console->run("$this->git version");
+        $git = $this->getGitBinary();
+        $gitVersion = $this->console->run("$git version");
         $regs = [];
 
         if (preg_match('/((\d+\.?)+)/', $gitVersion, $regs)) {
@@ -516,17 +496,6 @@ class BaseDeployer
         }
 
         return version_compare($version, '2.3', '>=');
-    }
-
-    /**
-     * Name of release folders
-     * @param string $timezone
-     * @return bool|string
-     */
-    protected function getReleaseName($timezone = 'Europe/Prague')
-    {
-        date_default_timezone_set($timezone);
-        return date('YmdHis');
     }
 
     /**
@@ -550,13 +519,15 @@ class BaseDeployer
      */
     protected function getComposerBinary()
     {
+        $php = $this->getPHPBinary();
+
         if ($this->console->commandExists('composer')) {
             $composer = $this->console->run('which composer')->toString();
         }
 
         if (empty($composer)) {
-            $this->console->run("cd " . $this->releasePath . " && curl -sS https://getcomposer.org/installer | " . $this->php);
-            $composer = $this->php . ' ' . $this->releasePath . '/composer.phar';
+            $this->console->run("cd $this->releasePath && curl -sS https://getcomposer.org/installer | $php");
+            $composer = "$php $this->releasePath/composer.phar";
         }
 
         return $composer;

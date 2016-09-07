@@ -49,27 +49,32 @@
                 <li class="list-group-item">
                     <div class="row">
                         <div class="col-md-4 text"><strong>Deployed at:</strong></div>
-                        <div class="col-md-8">{{ \Carbon\Carbon::parse($deploy->deployed_at, 'Europe/Prague')->format('j.n.Y G:i:s') }}</div>
+                        <div class="col-md-8">{{ $deploy->created_at->format('j.n.Y G:i:s') }}</div>
                     </div>
                 </li>
                 <li class="list-group-item">
                     <div class="row">
-                        <div class="col-md-4 text"><strong>Logged at:</strong></div>
-                        <div class="col-md-8">{{ \Carbon\Carbon::parse($deploy->created_at, 'Europe/Prague')->format('j.n.Y G:i:s') }}</div>
+                        <div class="col-md-4 text"><strong>Finished at:</strong></div>
+                        <div class="col-md-8">{{ $deploy->completed_at ? $deploy->completed_at->format('j.n.Y G:i:s') : 'Not finished yet' }}</div>
                     </div>
                 </li>
                 <li class="list-group-item">
                     <div class="row">
                         <div class="col-md-4 text"><strong>Duration:</strong></div>
-                        <div class="col-md-8">{{ $deploy->created_at->diffInSeconds($deploy->deployed_at) }} seconds
-                        </div>
+                        <div class="col-md-8">{{ $deploy->completed_at ? $deploy->created_at->diffInSeconds($deploy->completed_at) . 'seconds' : 'Not finished yet' }}</div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-md-4 text"><strong>Status:</strong></div>
+                        <div class="col-md-8">{{ $deploy->status }}</div>
                     </div>
                 </li>
                 <li class="list-group-item">
                     <div class="row">
                         <div class="col-md-4 text"><strong>Result:</strong></div>
                         <div class="col-md-8"><span
-                                    class="label label-{{ $deploy->deploy_complete ? 'success' : 'danger' }}">{{ $deploy->deploy_complete ? 'Successfully deployed' : 'Deploy script failed' }}</span>
+                                    class="label label-{{ $deploy->deploy_complete ? 'success' : 'danger' }}">{{ $deploy->deploy_complete ? 'Successfully deployed' : 'Deploy script not completed' }}</span>
                         </div>
                     </div>
                 </li>
@@ -83,21 +88,27 @@
                     <h3 class="panel-title">Terminal log</h3>
                 </div>
                 <table class="table">
-                    @foreach(json_decode($deploy->log) as $line)
-                        @if($line)
-                            <tr>
-                                @if(strpos($line, 'INFO') !== false)
-                                    <td class="text-primary"><strong>{{ $line }}</strong></td>
-                                @elseif(strpos($line, 'COMMAND') !== false)
-                                    <td class="text-success"><strong>{{ $line }}</strong></td>
-                                @elseif(strpos($line, 'ERROR') !== false)
-                                    <td class="text-danger"><strong>{{ $line }}</strong></td>
-                                @else
-                                    <td>{{ $line }}</td>
-                                @endif
-                            </tr>
-                        @endif
-                    @endforeach
+                    @if($deploy->log)
+                        @foreach(json_decode($deploy->log) as $line)
+                            @if($line)
+                                <tr>
+                                    @if(strpos($line, 'INFO') !== false)
+                                        <td class="text-primary"><strong>{{ $line }}</strong></td>
+                                    @elseif(strpos($line, 'COMMAND') !== false)
+                                        <td class="text-success"><strong>{{ $line }}</strong></td>
+                                    @elseif(strpos($line, 'ERROR') !== false)
+                                        <td class="text-danger"><strong>{{ $line }}</strong></td>
+                                    @else
+                                        <td>{{ $line }}</td>
+                                    @endif
+                                </tr>
+                            @endif
+                        @endforeach
+                        @else
+                        <tr>
+                            <td>No log has been created yet.</td>
+                        </tr>
+                    @endif
                 </table>
             </div>
         </div>

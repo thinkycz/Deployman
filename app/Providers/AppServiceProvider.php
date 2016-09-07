@@ -29,9 +29,5 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment() !== 'production') {
             $this->app->register(IdeHelperServiceProvider::class);
         }
-
-        $this->app->singleton(BaseDeployer::class, function () {
-            return new BaseDeployer(app(RemoteConsole::class));
-        });
     }
 }

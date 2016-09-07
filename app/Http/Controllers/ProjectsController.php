@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Connection;
+use App\Deploy;
 use App\Helpers\ProjectTypes;
 use App\Project;
 use App\Services\LaravelDeployer;
@@ -46,7 +47,7 @@ class ProjectsController extends Controller
             ProjectTypes::LARAVEL => 'Laravel'
         ];
 
-        $connections = Connection::where('user_id', auth()->user()->id)->get();
+        $connections = auth()->user()->connections;
 
         if (empty($connections)) {
             // todo
@@ -76,16 +77,10 @@ class ProjectsController extends Controller
 
     public function deploy(Project $project)
     {
-        $connection = $project->connection;
-        $hostname = $connection->hostname;
-        $username = $connection->username;
-        $password = $connection->password;
-
-        $this->console->connectTo($hostname)->withCredentials($username, $password);
-        $laravel = new LaravelDeployer($this->console);
-        $deploy = $laravel->deployProject($project);
-
-        return redirect(action('DeploysController@show', $deploy));
+        Deploy::create([
+            'user_id' => auth()->user()->id,
+            'project_id' => $project->id,
+        ]);
     }
 
     private function checkRepositoryConnection(Project $project)

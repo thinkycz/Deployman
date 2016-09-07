@@ -17,11 +17,13 @@ class CreateDeploysTable extends Migration
             $table->increments('id');
             $table->timestamps();
 
-            $table->text('log');
+            $table->string('status');
+            $table->string('folder_name');
             $table->boolean('deploy_complete');
-            $table->timestamp('deployed_at')->nullable();
+
+            $table->text('log')->nullable();
             $table->string('commit_hash')->nullable();
-            $table->string('folder_name')->nullable();
+            $table->timestamp('completed_at')->nullable();
 
             $table->unsignedInteger('project_id')->nullable();
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('set null');

@@ -16,9 +16,9 @@
             <tr>
                 <th scope="row">{{ $deploy->id }}</th>
                 <td><a href="{{ action('DeploysController@show', $deploy) }}">{{ $deploy->project->name }} (rev. {{ substr($deploy->commit_hash, 0, 7) ?: 'unknown' }})</a></td>
-                <td>{{ \Carbon\Carbon::parse($deploy->deployed_at, 'Europe/Prague')->diffForHumans() }}</td>
-                <td>{{ $deploy->created_at->diffInSeconds($deploy->deployed_at) }} seconds</td>
-                <td><span class="label label-{{ $deploy->deploy_complete ? 'success' : 'danger' }}">{{ $deploy->deploy_complete ? 'Successful' : 'Failed' }}</span></td>
+                <td>{{ $deploy->created_at->diffForHumans() }}</td>
+                <td>{{ $deploy->deploy_complete ? $deploy->created_at->diffInSeconds($deploy->completed_at) : '*' }} seconds</td>
+                <td><span class="label label-{{ $deploy->deploy_complete ? 'success' : 'danger' }}">{{ $deploy->deploy_complete ? 'Complete' : 'Incomplete' }}</span></td>
             </tr>
         @endforeach
         </tbody>

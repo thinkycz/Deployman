@@ -18,7 +18,6 @@ class LaravelDeployer extends BaseDeployer
 
         try
         {
-            $this->initDirectory($project->path);
             $this->initDeployLog();
             $this->deployFrom($project->repository);
             return $this->createDeployRecord($project, $begin, $this->hash, $this->folder);
