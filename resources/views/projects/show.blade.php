@@ -95,7 +95,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($project->deploys as $deploy)
+                    @foreach($project->deploys()->latest()->get() as $deploy)
                         <tr>
                             <th scope="row">{{ $deploy->id }}</th>
                             <td>
@@ -191,7 +191,7 @@
             });
         });
 
-        $('.showStatusWindow').click(function () {
+        $('table.table').on('click', '.showStatusWindow', function () {
             var deploy = $(this).attr('data-deploy-id');
             var dialog = $("#dialog");
             var dialogDefaultText = dialog.html();
@@ -224,7 +224,7 @@
             var btn = $(this);
             var project = $(this).attr('data-project-id');
             var text = $(this).html();
-            var table = $('table#deploys').find('tr:last');
+            var table = $('table#deploys tbody').find('tr:first');
             var dialog = $("#dialog");
             var finished = false;
             var dialogDefaultText = dialog.html();
@@ -252,13 +252,13 @@
             $.ajax({
                 url: '/projects/' + project + '/deploy'
             }).done(function (data) {
-                table.after(
+                table.before(
                         '<tr>' +
                         '<th>' + data.id + '</th>' +
                         '<td><a href="/deploys/' + data.id + '">unknown</a></td>' +
                         '<td>now</td>' +
                         '<td>* seconds</td>' +
-                        '<td><span class="label label-info"><span class="glyphicon glyphicon glyphicon-hourglass"></span> Pending</span></td>' +
+                        '<td><button class="showStatusWindow btn btn-xs btn-info" data-deploy-id="' + data.id + '"><span class="glyphicon glyphicon glyphicon-hourglass"></span> Pending</button></td>' +
                         '</tr>'
                 );
                 dialog.dialog('open');
