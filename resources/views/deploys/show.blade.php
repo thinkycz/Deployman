@@ -61,13 +61,20 @@
                 <li class="list-group-item">
                     <div class="row">
                         <div class="col-md-4 text"><strong>Duration:</strong></div>
-                        <div class="col-md-8">{{ $deploy->finished_at ? $deploy->created_at->diffInSeconds($deploy->finished_at) . 'seconds' : 'Not finished yet' }}</div>
+                        <div class="col-md-8">{{ $deploy->finished_at ? $deploy->created_at->diffInSeconds($deploy->finished_at) . ' seconds' : 'Not finished yet' }}</div>
                     </div>
                 </li>
                 <li class="list-group-item">
                     <div class="row">
                         <div class="col-md-4 text"><strong>Status:</strong></div>
-                        <div class="col-md-8"><span class="label label-{{ $deploy->status == 'pending' ? 'info' : ($deploy->status == 'running' ? 'warning' : ($deploy->status == 'finished' ? 'success' : 'danger')) }}">{{ ucfirst($deploy->status) }}</span></div>
+                        <div class="col-md-8">
+                            <span class="label label-{{ $deploy->status == 'pending' ? 'info' : ($deploy->status == 'running' ? 'warning' : ($deploy->status == 'finished' ? 'success' : 'danger')) }}">
+                                @if($deploy->status == 'running')
+                                    <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+                                @endif
+                                {{ ucfirst($deploy->status) }}
+                            </span>
+                        </div>
                     </div>
                 </li>
                 <li class="list-group-item">
@@ -79,36 +86,5 @@
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-default panel-{{ $deploy->status == 'pending' ? 'info' : ($deploy->status == 'running' ? 'warning' : ($deploy->status == 'finished' ? 'success' : 'danger')) }}">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Terminal log</h3>
-                </div>
-                <table class="table">
-                    @if($deploy->log)
-                        @foreach(unserialize($deploy->log) as $line)
-                            @if($line)
-                                <tr>
-                                    @if(strpos($line, 'INFO') !== false)
-                                        <td class="text-primary"><strong>{{ $line }}</strong></td>
-                                    @elseif(strpos($line, 'COMMAND') !== false or strpos($line, 'SUCCESS') !== false)
-                                        <td class="text-success"><strong>{{ $line }}</strong></td>
-                                    @elseif(strpos($line, 'ERROR') !== false)
-                                        <td class="text-danger"><strong>{{ $line }}</strong></td>
-                                    @else
-                                        <td>{{ $line }}</td>
-                                    @endif
-                                </tr>
-                            @endif
-                        @endforeach
-                        @else
-                        <tr>
-                            <td>No log has been created yet.</td>
-                        </tr>
-                    @endif
-                </table>
-            </div>
-        </div>
-    </div>
+    @include('partials.terminal_log')
 @endsection

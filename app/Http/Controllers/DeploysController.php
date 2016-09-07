@@ -37,9 +37,25 @@ class DeploysController extends Controller
 
     public function fire(Deploy $deploy)
     {
-        $this->console->useConnectionObject($deploy->project->connection);
-        $deployer = new LaravelDeployer($this->console, $deploy);
-
+        if (Deploy::where('status', 'running')->get()->isEmpty()) {
+            $this->console->useConnectionObject($deploy->project->connection);
+            $deployer = new LaravelDeployer($this->console, $deploy);
+        } else {
+            sleep(5);
+            $this->fire($deploy);
+        }
         return $deployer->run();
+    }
+
+    public function status(Deploy $deploy)
+    {
+        $ajax = true;
+        $queue = !Deploy::where('status', 'running')->where('id', '!=', $deploy->id)->get()->isEmpty();
+
+        return [
+            'html' => view('partials.terminal_log', compact('deploy', 'ajax', 'queue'))->render(),
+            'deploy' => $deploy,
+            'queue' => $queue
+        ];
     }
 }
