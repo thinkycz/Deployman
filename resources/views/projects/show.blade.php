@@ -63,7 +63,7 @@
                         <button id="delete-project" data-project-id="{{ $project->id }}" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span> Delete this project</button>
                     </li>
                     <li class="list-group-item">
-                        <button id="deploy" data-project-id="{{ $project->id }}" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-cloud-upload"></span> Deploy now !</button>
+                        <button id="deploy-now" data-project-id="{{ $project->id }}" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-cloud-upload"></span> Deploy now !</button>
                     </li>
                 </ul>
             </div>
@@ -76,7 +76,7 @@
                     <h3 class="panel-title">Recent deploys</h3>
                 </div>
 
-                <table class="table">
+                <table class="table" id="deploys">
                     <thead>
                     <tr>
                         <th>#</th>
@@ -93,7 +93,7 @@
                             <td><a href="{{ action('DeploysController@show', $deploy) }}">{{ substr($deploy->commit_hash, 0, 7) ?: 'unknown' }}</a></td>
                             <td>{{ $deploy->created_at->diffForHumans() }}</td>
                             <td>{{ $deploy->deploy_complete ? $deploy->created_at->diffInSeconds($deploy->completed_at) : '*' }} seconds</td>
-                            <td><span class="label label-{{ $deploy->deploy_complete ? 'success' : 'danger' }}">{{ $deploy->deploy_complete ? 'Complete' : 'Incomplete' }}</span></td>
+                            <td>{{ $deploy->status }}</td>
                         </tr>
                     @endforeach
                     </tbody>
@@ -149,9 +149,42 @@
             });
         });
 
-        $(document).ready( function() {
+        $('#deploy-now').click(function () {
+            var btn = $(this);
+            var id = $(this).attr('data-project-id');
+            var text = $(this).html();
+            var table = $('table#deploys').find('tr:last');
+            var dialog = $("#dialog");
+
+            btn.html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Please wait ...');
+            btn.attr('disabled', true);
+
+            $.ajax({
+                url: '/projects/' + id + '/deploy'
+            }).done(function (data) {
+                table.after(
+                        '<tr>' +
+                        '<th>' + data.id + '</th>' +
+                        '<td>' + '<a href="/deploys/' + data.id + '">unknown</a>' + '</td>' +
+                        '<td>' + 'now' + '</td>' +
+                        '<td>' + '* seconds' + '</td>' +
+                        '<td>' + 'pending' + '</td>' +
+                        '</tr>'
+                );
+                dialog.dialog('open');
+            }).always(function () {
+                btn.html(text);
+                btn.attr('disabled', false);
+            });
+        });
+
+        $(document).ready(function() {
             $( "#dialog" ).dialog({
-                autoOpen: false
+                autoOpen: false,
+                modal: true,
+                minWidth: 800,
+                minHeight: 600,
+                title: "Deployment in progress"
             });
         });
     </script>

@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
+use App\Deploy;
 use Deployer\Server\Configuration;
 use Deployer\Server\Local;
 use Deployer\Server\Remote\PhpSecLib;
 use Deployer\Type\Result;
-use Session;
 
 class RemoteConsole
 {
@@ -157,6 +157,31 @@ class RemoteConsole
     }
 
     /**
+     * Run command on the remote server and log into Deploy entity
+     *
+     * @param $command
+     * @param Deploy $deploy
+     * @return Result
+     */
+    public function runAndLog($command, Deploy $deploy)
+    {
+        if (!empty($this->workingPath)) {
+            $command = "cd $this->workingPath && $command";
+        }
+
+        $output = $this->server->run($command);
+        $result = new Result($output);
+
+        $deploy->addToLog('COMMAND: ' . $command);
+        foreach ($result->toArray() as $outputLine)
+        {
+            $deploy->addToLog($outputLine);
+        }
+
+        return $result;
+    }
+
+    /**
      * Run command on the remote server
      *
      * @param $command
@@ -170,12 +195,6 @@ class RemoteConsole
 
         $output = $this->server->run($command);
         $result = new Result($output);
-
-        Session::push('deploy_log', 'COMMAND: ' . $command);
-        foreach ($result->toArray() as $outputLine)
-        {
-            Session::push('deploy_log', $outputLine);
-        }
 
         return $result;
     }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\BaseDeployer;
 use App\Services\RemoteConsole;
 
 class DashboardController extends Controller

@@ -89,7 +89,7 @@
                 </div>
                 <table class="table">
                     @if($deploy->log)
-                        @foreach(json_decode($deploy->log) as $line)
+                        @foreach(unserialize($deploy->log) as $line)
                             @if($line)
                                 <tr>
                                     @if(strpos($line, 'INFO') !== false)

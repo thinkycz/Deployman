@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Connection;
 use App\Deploy;
 use App\Helpers\ProjectTypes;
 use App\Project;
-use App\Services\LaravelDeployer;
 use App\Services\RemoteConsole;
 use Illuminate\Http\Request;
-use App\Http\Requests;
 
 class ProjectsController extends Controller
 {
@@ -77,7 +74,7 @@ class ProjectsController extends Controller
 
     public function deploy(Project $project)
     {
-        Deploy::create([
+        return Deploy::create([
             'user_id' => auth()->user()->id,
             'project_id' => $project->id,
         ]);

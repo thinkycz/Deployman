@@ -6,7 +6,6 @@ use App\Connection;
 use App\Services\RemoteConsole;
 use Deployer\Server\Configuration;
 use Illuminate\Http\Request;
-use App\Http\Requests;
 
 class ConnectionsController extends Controller
 {

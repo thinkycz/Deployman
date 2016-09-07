@@ -43,4 +43,12 @@ class Deploy extends Model
     {
         return $this->belongsTo(Project::class);
     }
+
+    public function addToLog($line)
+    {
+        $log = unserialize($this->log);
+        $log[] = $line;
+        $this->log = serialize($log);
+        $this->save();
+    }
 }
