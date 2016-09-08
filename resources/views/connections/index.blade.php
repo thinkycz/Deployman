@@ -1,9 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-    <div id="connection_list">
-        <div class="pull-right">
-            <a href="{{ action('ConnectionsController@create') }}" class="btn btn-primary">Create a new connection</a>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">List of connections</h3>
+        </div>
+
+        <div class="panel-body">
+            <div class="pull-right">
+                <a href="{{ action('ConnectionsController@create') }}" class="btn btn-primary">Create a new connection</a>
+            </div>
         </div>
 
         <table class="table">
@@ -34,7 +40,7 @@
                     <td>{{ $connection->method == 0 ? 'Password' : 'Private key'}}</td>
                     <td>{{ $connection->created_at->diffForHumans() }}</td>
                     <td>
-                        <button class="btn btn-xs btn-primary status" data-status-id="{{ $connection->id }}" v-on:click="checkConnection({{ $connection->id }})"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Connecting ...</button>
+                        <button class="btn btn-xs btn-primary status" data-status-id="{{ $connection->id }}")"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Connecting ...</button>
                     </td>
                 </tr>
             @endforeach

@@ -143,7 +143,7 @@
                 modal: true,
                 minWidth: 800,
                 height: 600,
-                title: "Deployment in progress"
+                title: "Deployment status"
             });
         });
 
@@ -236,6 +236,23 @@
             btn.html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Please wait ...');
             btn.attr('disabled', true);
 
+            swal({
+                title: "Are you sure?",
+                text: "This will deploy the latest commit from the master branch.",
+                type: "info",
+                showCancelButton: true,
+                confirmButtonColor: "#46B864",
+                confirmButtonText: "Yes, deploy it!",
+                closeOnConfirm: true
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    deployProject();
+                } else {
+                    btn.html(text);
+                    btn.attr('disabled', false);
+                }
+            });
+
             var startDeployment = function (deploy) {
                 $.ajax({
                     url: '/deploys/' + deploy + '/fire'
@@ -253,32 +270,34 @@
                 });
             };
 
-            $.ajax({
-                url: '/projects/' + project + '/deploy'
-            }).done(function (data) {
-                table.after(
-                        '<tr>' +
-                        '<th>' + data.id + '</th>' +
-                        '<td><a href="/deploys/' + data.id + '">unknown</a></td>' +
-                        '<td>now</td>' +
-                        '<td>* seconds</td>' +
-                        '<td><button class="showStatusWindow btn btn-xs btn-info" data-deploy-id="' + data.id + '"><span class="glyphicon glyphicon glyphicon-hourglass"></span> Pending</button></td>' +
-                        '</tr>'
-                );
-                dialog.dialog('open');
-                startDeployment(data.id);
-                var loop = setInterval(function () {
-                    updateStatus(data.id);
-                    if (finished) clearInterval(loop);
-                    dialog.on("dialogclose", function () {
-                        clearInterval(loop);
-                        dialog.html(dialogDefaultText);
-                    });
-                }, 2000);
-            }).always(function () {
-                btn.html(text);
-                btn.attr('disabled', false);
-            });
+            var deployProject = function () {
+                $.ajax({
+                    url: '/projects/' + project + '/deploy'
+                }).done(function (data) {
+                    table.after(
+                            '<tr>' +
+                            '<th>' + data.id + '</th>' +
+                            '<td><a href="/deploys/' + data.id + '">unknown</a></td>' +
+                            '<td>now</td>' +
+                            '<td>* seconds</td>' +
+                            '<td><button class="showStatusWindow btn btn-xs btn-info" data-deploy-id="' + data.id + '"><span class="glyphicon glyphicon glyphicon-hourglass"></span> Pending</button></td>' +
+                            '</tr>'
+                    );
+                    dialog.dialog('open');
+                    startDeployment(data.id);
+                    var loop = setInterval(function () {
+                        updateStatus(data.id);
+                        if (finished) clearInterval(loop);
+                        dialog.on("dialogclose", function () {
+                            clearInterval(loop);
+                            dialog.html(dialogDefaultText);
+                        });
+                    }, 2000);
+                }).always(function () {
+                    btn.html(text);
+                    btn.attr('disabled', false);
+                });
+            };
         });
     </script>
 @endsection
