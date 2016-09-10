@@ -47,7 +47,9 @@
                     <li class="list-group-item">
                         <div class="row">
                             <div class="col-md-4 text"><strong>Active release:</strong></div>
-                            <div class="col-md-8 active-release"><span class="label label-primary"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Connecting ...</span></div>
+                            <div class="col-md-8 active-release"><span class="label label-primary"><span
+                                            class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Connecting ...</span>
+                            </div>
                         </div>
                     </li>
                 </ul>
@@ -161,7 +163,9 @@
                                     {{ ucfirst($deploy->status) }}
                                 </button>
                             </td>
-                            <td class="on-server"><span class="label label-primary"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Connecting ...</span></td>
+                            <td class="on-server"><span class="label label-primary"><span
+                                            class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Connecting ...</span>
+                            </td>
                         </tr>
                     @endforeach
                 </table>
@@ -198,12 +202,14 @@
             $.ajax({
                 url: '/projects/' + id + '/getCurrentDeploy'
             }).done(function (data) {
-                if (data.deploy.deploy_complete == false)
-                {
-                    $('.unsuccessful-deploy').show();
+                if (data.deploy) {
+                    if (data.deploy.deploy_complete == false) {
+                        $('.unsuccessful-deploy').show();
+                    }
+                    $('.active-release').html(data.deploy.folder_name);
+                } else {
+                    $('.active-release').html('Not available');
                 }
-
-                $('.active-release').html(data.deploy.folder_name);
 
                 $(".deploy-row").each(function () {
                     field = $(this).find(".on-server");

@@ -31,7 +31,10 @@
                     <td>{{ ucfirst($project->type) }}</td>
                     <td>{{ $project->repository }}</td>
                     <td>{{ $project->path }}</td>
-                    <td class="active-revision" data-project-id="{{ $project->id }}"><span class="label label-primary" ><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Connecting ...</span></td>
+                    <td class="active-revision" data-project-id="{{ $project->id }}"><span
+                                class="label label-primary"><span
+                                    class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Connecting ...</span>
+                    </td>
                 </tr>
             @endforeach
             </tbody>
@@ -41,7 +44,7 @@
 
 @section('scripts')
     <script>
-        $(document).ready(function(){
+        $(document).ready(function () {
             $('.active-revision').each(function () {
                 var field = $(this);
                 var id = $(this).attr('data-project-id');
@@ -49,10 +52,14 @@
                 $.ajax({
                     url: '/projects/' + id + '/getCurrentDeploy'
                 }).done(function (data) {
-                    if (data.deploy.deploy_complete) {
-                        field.html('<span class="label label-success">' + data.deploy.folder_name + '</span>');
+                    if (data.deploy) {
+                        if (data.deploy.deploy_complete) {
+                            field.html('<span class="label label-success">' + data.deploy.folder_name + '</span>');
+                        } else {
+                            field.html('<span class="label label-danger">' + data.deploy.folder_name + '</span>');
+                        }
                     } else {
-                        field.html('<span class="label label-danger">' + data.deploy.folder_name + '</span>');
+                        field.html('<span class="label label-info">Not available</span>');
                     }
 
                 }).fail(function () {
