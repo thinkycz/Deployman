@@ -46,7 +46,7 @@
                 <div class="form-group">
                     <label class="col-md-4 control-label" for="password">Password</label>
                     <div class="col-md-4">
-                        <input id="password" name="password" type="text" placeholder="* * * * * *" class="form-control input-md" @keyPress="passwordTyped">
+                        <input id="password" name="password" type="text" placeholder="* * * * * *" class="form-control input-md" @keyPress="passwordTyped" required="">
                         <span class="help-block">Enter the password</span>
                     </div>
                 </div>
