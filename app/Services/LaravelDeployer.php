@@ -44,60 +44,80 @@ class LaravelDeployer extends BaseDeployer
 
     public function disableMaintenance()
     {
+        $this->deploy->addToLog('INFO: Disabling maintenance mode.');
+
         $php = $this->getPHPBinary();
         return $this->console->runAndLog("$php $this->deployPath/current/artisan up", $this->deploy);
     }
 
     public function enableMaintenance()
     {
+        $this->deploy->addToLog('INFO: Enabling maintenance mode.');
+
         $php = $this->getPHPBinary();
         return $this->console->runAndLog("$php $this->deployPath/current/artisan down", $this->deploy);
     }
 
     public function migrate()
     {
+        $this->deploy->addToLog('INFO: Running artisan migrate.');
+
         $php = $this->getPHPBinary();
         return $this->console->runAndLog("$php $this->deployPath/current/artisan migrate --force", $this->deploy);
     }
 
     public function rollbackMigrations()
     {
+        $this->deploy->addToLog('INFO: Running artisan migrate:rollback.');
+
         $php = $this->getPHPBinary();
-        return $this->console->runAndLog("$php $this->deployPath/current/artisan migrate migrate:rollback --force", $this->deploy);
+        return $this->console->runAndLog("$php $this->deployPath/current/artisan migrate:rollback --force", $this->deploy);
     }
 
     public function migrationStatus()
     {
+        $this->deploy->addToLog('INFO: Running artisan migrate:status.');
+
         $php = $this->getPHPBinary();
         return $this->console->runAndLog("$php $this->deployPath/current/artisan migrate:status", $this->deploy);
     }
 
     public function seedDatabase()
     {
+        $this->deploy->addToLog('INFO: Running artisan db:seed.');
+
         $php = $this->getPHPBinary();
         return $this->console->runAndLog("$php $this->deployPath/current/artisan db:seed --force", $this->deploy);
     }
 
     public function clearCache()
     {
+        $this->deploy->addToLog('INFO: Clearing cache.');
+
         $php = $this->getPHPBinary();
         return $this->console->runAndLog("$php $this->deployPath/current/artisan cache:clear", $this->deploy);
     }
 
     public function configCache()
     {
+        $this->deploy->addToLog('INFO: Configuring cache.');
+
         $php = $this->getPHPBinary();
         return $this->console->runAndLog("$php $this->deployPath/current/artisan config:cache", $this->deploy);
     }
 
     public function routeCache()
     {
+        $this->deploy->addToLog('INFO: Running artisan route:cache.');
+
         $php = $this->getPHPBinary();
         return $this->console->runAndLog("$php $this->deployPath/current/artisan route:cache", $this->deploy);
     }
 
     public function createSymlinkToPublicStorage()
     {
+        $this->deploy->addToLog('INFO: Creating symbolic links to public storage.');
+
         // Remove from source.
         $this->console->runAndLog("if [ -d $(echo $this->releasePath/public/storage) ]; then rm -rf $this->releasePath/public/storage; fi", $this->deploy);
 

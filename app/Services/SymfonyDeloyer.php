@@ -55,6 +55,8 @@ class SymfonyDeloyer extends BaseDeployer
      */
     public function createCacheDirectory()
     {
+        $this->deploy->addToLog('INFO: Creating cache directory.');
+
         // Set cache dir
         $cacheDir = "$this->releasePath/$this->varDir/cache";
 
@@ -73,6 +75,8 @@ class SymfonyDeloyer extends BaseDeployer
      */
     public function normalizeAssetTimestamps()
     {
+        $this->deploy->addToLog('INFO: Normalizing asset timestamps.');
+
         $assets = implode(' ', array_map(function ($asset) {
             return "$this->releasePath/$asset";
         }, $this->assets));
@@ -87,6 +91,8 @@ class SymfonyDeloyer extends BaseDeployer
      */
     public function asseticDump()
     {
+        $this->deploy->addToLog('INFO: Running assetic dump.');
+
         if (!$this->dump_assets) {
             return;
         }
@@ -101,6 +107,8 @@ class SymfonyDeloyer extends BaseDeployer
      */
     public function cacheWarmup()
     {
+        $this->deploy->addToLog('INFO: Warming up cache.');
+
         $php = $this->getPHPBinary();
 
         $this->console->runAndLog("$php $this->releasePath/$this->binDir/console cache:warmup  --env=$this->env --no-debug", $this->deploy);
@@ -111,6 +119,8 @@ class SymfonyDeloyer extends BaseDeployer
      */
     public function doctrineMigrate()
     {
+        $this->deploy->addToLog('INFO: Ronning doctrine migrations.');
+
         $php = $this->getPHPBinary();
 
         $this->console->runAndLog("$php $this->releasePath/$this->binDir/console doctrine:migrations:migrate --env=$this->env --no-debug --no-interaction", $this->deploy);
@@ -121,6 +131,8 @@ class SymfonyDeloyer extends BaseDeployer
      */
     public function clearControllers()
     {
+        $this->deploy->addToLog('INFO: Clearing development environment specific files.');
+
         $this->console->runAndLog("rm -f $this->releasePath/web/app_*.php", $this->deploy);
         $this->console->runAndLog("rm -f $this->releasePath/web/config.php", $this->deploy);
     }
