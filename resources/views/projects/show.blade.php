@@ -215,7 +215,7 @@
                     field = $(this).find(".on-server");
                     var folder = $(this).find(".folder-name").html();
 
-                    if (folder == data.deploy.folder_name) {
+                    if (data.deploy && folder == data.deploy.folder_name) {
                         $(this).addClass('success');
                     }
 
