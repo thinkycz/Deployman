@@ -20,6 +20,7 @@ class Symfony3Deployer extends SymfonyDeloyer
             $this->prepareToDeploy();
             $this->prepareReleaseFolders();
             $this->pullCodeFromGit();
+            $this->clearControllers();
             $this->copyDirectories($this->copyDirs);
             $this->createCacheDirectory();
             $this->createSymlinksToSharedResources($this->sharedDirs, $this->sharedFiles);

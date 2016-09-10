@@ -26,6 +26,7 @@ class SymfonyDeloyer extends BaseDeployer
             $this->prepareToDeploy();
             $this->prepareReleaseFolders();
             $this->pullCodeFromGit();
+            $this->clearControllers();
             $this->copyDirectories($this->copyDirs);
             $this->createCacheDirectory();
             $this->createSymlinksToSharedResources($this->sharedDirs, $this->sharedFiles);
