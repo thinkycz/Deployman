@@ -22,6 +22,7 @@ class CreateDeploysTable extends Migration
             $table->boolean('deploy_complete');
 
             $table->text('log')->nullable();
+            $table->string('branch')->nullable();
             $table->string('commit_hash')->nullable();
             $table->timestamp('finished_at')->nullable();
 

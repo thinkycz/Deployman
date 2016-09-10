@@ -20,7 +20,7 @@ class DeploysController extends Controller
 
     public function index()
     {
-        $deploys = auth()->user()->deploys;
+        $deploys = auth()->user()->deploys()->latest()->get();
 
         return view('deploys.index', compact('deploys'));
     }
@@ -32,8 +32,7 @@ class DeploysController extends Controller
 
     public function fire(Deploy $deploy)
     {
-        while(!Deploy::where('status', 'running')->get()->isEmpty())
-        {
+        while (!Deploy::where('status', 'running')->get()->isEmpty()) {
             sleep(5);
         }
         $deployer = $this->determineProjectDeployer($deploy);
@@ -58,8 +57,7 @@ class DeploysController extends Controller
      */
     private function determineProjectDeployer(Deploy $deploy)
     {
-        switch ($deploy->project->type)
-        {
+        switch ($deploy->project->type) {
             case ProjectType::LARAVEL:
                 return new LaravelDeployer($deploy);
             case ProjectType::STATIC_PAGES:

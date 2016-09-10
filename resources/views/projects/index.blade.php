@@ -31,7 +31,7 @@
                     <td>{{ ucfirst($project->type) }}</td>
                     <td>{{ $project->repository }}</td>
                     <td>{{ $project->path }}</td>
-                    <td></td>
+                    <td>{{ $active[$project->id] }}</td>
                 </tr>
             @endforeach
             </tbody>

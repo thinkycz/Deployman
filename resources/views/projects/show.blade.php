@@ -68,25 +68,22 @@
                         <button id="delete-project" data-project-id="{{ $project->id }}" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span> Delete this project</button>
                     </li>
                     <li class="list-group-item">
-                        <button id="deploy-now" data-project-id="{{ $project->id }}" class="btn btn-success">
-                            <span class="glyphicon glyphicon-cloud-upload"></span> Deploy latest commit from master
-                        </button>
-                    </li>
-                    <li class="list-group-item">
-                        <form class="form-horizontal">
+                        <form class="form-horizontal" id="deploy-form">
                             <div class="form-group">
-                                <label class="col-md-3 control-label" for="textinput">Branch</label>
+                                <label class="col-md-3 control-label" for="branch">Branch</label>
                                 <div class="col-md-9">
-                                    <input id="textinput" name="textinput" type="text" placeholder="eg. develop" class="form-control input-md">
+                                    <input id="branch" name="branch" type="text" placeholder="eg. develop" class="form-control input-md">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-md-3 control-label" for="textinput">Commit</label>
+                                <label class="col-md-3 control-label" for="commit">Commit</label>
                                 <div class="col-md-9">
-                                    <input id="textinput" name="textinput" type="text" placeholder="eg. b2599ac7998893cf62cf4a6f625dd92c770c2484" class="form-control input-md">
+                                    <input id="commit" name="commit" type="text" placeholder="eg. b2599ac7998893cf62cf4a6f625dd92c770c2484" class="form-control input-md">
                                 </div>
                             </div>
-                            <input type="submit" class="btn btn-success" value="Deploy with this configuration">
+                            <button id="deploy-now" data-project-id="{{ $project->id }}" class="btn btn-success">
+                                <span class="glyphicon glyphicon-cloud-upload"></span> Deploy latest commit from master
+                            </button>
                         </form>
                     </li>
                 </ul>
@@ -108,6 +105,7 @@
                         <th>Deployed</th>
                         <th>Duration</th>
                         <th>Status</th>
+                        <th>On server</th>
                     </tr>
                     @foreach($project->deploys()->latest()->get() as $deploy)
                         <tr>
@@ -133,6 +131,13 @@
                                     @endif
                                     {{ ucfirst($deploy->status) }}
                                 </button>
+                            </td>
+                            <td>
+                                @if(in_array($deploy->folder_name, $onServer))
+                                    <span class="label label-success"><span class="glyphicon glyphicon-search"></span> Exists</span>
+                                @else
+                                    <span class="label label-danger"><span class="glyphicon glyphicon-trash"></span> Deleted</span>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
@@ -163,6 +168,24 @@
                 height: 600,
                 title: "Deployment status"
             });
+        });
+
+        $('#branch').on('input', function () {
+            var button = $('#deploy-now');
+            var commitBtn = $('#commit');
+            var commit = commitBtn.val() ? commitBtn.val().substring(0, 7) : 'latest commit';
+            var branch = $(this).val() ? $(this).val() : 'master';
+
+            button.html('<span class="glyphicon glyphicon-cloud-upload"></span> Deploy ' + commit + ' from ' + branch);
+        });
+
+        $('#commit').on('input', function () {
+            var button = $('#deploy-now');
+            var branchBtn = $('#branch');
+            var commit = $(this).val() ? $(this).val().substring(0, 7) : 'latest commit';
+            var branch = branchBtn.val() ? branchBtn.val() : 'master';
+
+            button.html('<span class="glyphicon glyphicon-cloud-upload"></span> Deploy ' + commit + ' from ' + branch);
         });
 
         $('#test-server').click(function () {
@@ -230,6 +253,8 @@
                         swal("Cleanup successful", "Deployman has removed your old deploys.", "success");
                     }).fail(function (data) {
                         swal("Cleanup failed", "Deployman couldn't finish the cleanup.\n\nError: " + data.responseText, "error");
+                    }).always(function () {
+                        location.reload();
                     });
                 }
                 btn.html(text);
@@ -323,15 +348,18 @@
 
             var deployProject = function () {
                 $.ajax({
-                    url: '/projects/' + project + '/deploy'
+                    url: '/projects/' + project + '/deploy',
+                    data: $("#deploy-form").serialize()
                 }).done(function (data) {
                     table.after(
                             '<tr>' +
                             '<th>' + data.id + '</th>' +
                             '<td><a href="/deploys/' + data.id + '">unknown</a></td>' +
+                            '<td>unknown</td>' +
                             '<td>now</td>' +
                             '<td>* seconds</td>' +
                             '<td><button class="showStatusWindow btn btn-xs btn-info" data-deploy-id="' + data.id + '"><span class="glyphicon glyphicon glyphicon-hourglass"></span> Pending</button></td>' +
+                            '<td><span class="label label-info"><span class="glyphicon glyphicon-cog"></span> Creating</span></td>' +
                             '</tr>'
                     );
                     dialog.dialog('open');

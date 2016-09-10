@@ -157,6 +157,14 @@ class BaseDeployer extends ProjectManager
         $gitCache = $this->useGitCache();
         $depth = $gitCache ? '' : '--depth 1';
 
+        if (empty($branch) and !empty($this->deploy->branch)) {
+            $branch = $this->deploy->branch;
+        }
+
+        if (empty($revision) and !empty($this->deploy->commit_hash)) {
+            $revision = $this->deploy->commit_hash;
+        }
+
         $at = '';
         if (!empty($tag)) {
             $at = "-b $tag";
@@ -170,22 +178,22 @@ class BaseDeployer extends ProjectManager
             // To checkout specified revision we need to clone all tree.
             $this->console->runAndLog("$git clone $at --recursive -q $repository $this->releasePath 2>&1", $this->deploy);
             $this->console->runAndLog("cd $this->releasePath && $git checkout $revision", $this->deploy);
-        }
-        elseif ($gitCache && isset($releases[1])) {
+        } elseif ($gitCache && isset($releases[1])) {
             try {
                 $this->console->runAndLog("$git clone $at --recursive -q --reference $this->deployPath/releases/{$releases[1]} --dissociate $repository  $this->releasePath 2>&1", $this->deploy);
             } catch (RuntimeException $exc) {
                 // If deploy_path/releases/{$releases[1]} has a failed git clone, is empty, shallow etc, git would throw error and give up. So we're forcing it to act without reference in this situation
                 $this->console->runAndLog("$git clone $at --recursive -q $repository $this->releasePath 2>&1", $this->deploy);
             }
-        }
-        else {
+        } else {
             // if we're using git cache this would be identical to above code in catch - full clone. If not, it would create shallow clone.
             $this->console->runAndLog("$git clone $at $depth --recursive -q $repository $this->releasePath 2>&1", $this->deploy);
         }
 
-        $this->deploy->commit_hash = $this->console->runAndLog("cd $this->releasePath && git rev-parse HEAD", $this->deploy)->toString();
-        $this->deploy->save();
+        if (empty($this->deploy->commit_hash)) {
+            $this->deploy->commit_hash = $this->console->runAndLog("cd $this->releasePath && git rev-parse HEAD", $this->deploy)->toString();
+            $this->deploy->save();
+        }
 
         return $this->deploy;
     }

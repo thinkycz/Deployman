@@ -10,7 +10,9 @@ class Deploy extends Model
 {
     protected $fillable = [
         'user_id',
-        'project_id'
+        'project_id',
+        'branch',
+        'commit_hash'
     ];
 
     protected $dates = [

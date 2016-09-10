@@ -22,15 +22,24 @@ class ProjectsController extends Controller
     public function index()
     {
         $projects = auth()->user()->projects;
+        $active = [];
 
-        return view('projects.index', compact('projects'));
+        foreach ($projects as $project) {
+            $manager = new ProjectManager($project);
+            $current = $manager->getCurrentReleaseFolder();
+            $active[$project->id] = $current;
+        }
+
+        return view('projects.index', compact('projects', 'active'));
     }
 
     public function show(Project $project)
     {
         $manager = new ProjectManager($project);
         $current = $manager->getCurrentReleaseFolder();
-        return view('projects.show', compact('project', 'current'));
+        $onServer = $manager->getListOfReleases();
+
+        return view('projects.show', compact('project', 'current', 'onServer'));
     }
 
     public function create()
@@ -70,23 +79,22 @@ class ProjectsController extends Controller
         return $this->checkRepositoryConnection($project);
     }
 
-    public function deploy(Project $project)
+    public function deploy(Project $project, Request $request)
     {
         return Deploy::create([
             'user_id' => auth()->user()->id,
             'project_id' => $project->id,
+            'branch' => $request->get('branch'),
+            'commit_hash' => $request->get('commit'),
         ]);
     }
 
     public function cleanup(Project $project)
     {
-        try
-        {
+        try {
             $manager = new ProjectManager($project);
             $manager->cleanupOldReleases();
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return response($e->getMessage(), 400);
         }
 
@@ -95,13 +103,10 @@ class ProjectsController extends Controller
 
     private function checkRepositoryConnection(Project $project)
     {
-        try
-        {
+        try {
             $manager = new ProjectManager($project);
             $manager->getConsole()->run("git ls-remote -h $project->repository");
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return response($e->getMessage(), 400);
         }
 
