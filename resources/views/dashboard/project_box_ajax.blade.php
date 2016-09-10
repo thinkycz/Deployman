@@ -24,7 +24,7 @@
                 <div class="row">
                     <div class="col-md-4 text"><strong>Total deploys:</strong></div>
                     <div class="col-md-8">
-                            {{ $deploy->where('deploy_complete', true)->count() }} successful, {{ $deploy->where('deploy_complete', false)->count() }} failed
+                            {{ $project->deploys->where('deploy_complete', true)->count() }} successful, {{ $project->deploys->where('deploy_complete', false)->count() }} failed
                     </div>
                 </div>
             </li>
