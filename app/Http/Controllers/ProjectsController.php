@@ -24,10 +24,15 @@ class ProjectsController extends Controller
         $projects = auth()->user()->projects;
         $active = [];
 
-        foreach ($projects as $project) {
-            $manager = new ProjectManager($project);
-            $current = $manager->getCurrentReleaseFolder();
-            $active[$project->id] = $current;
+        try {
+            foreach ($projects as $project) {
+                $manager = new ProjectManager($project);
+                $current = $manager->getCurrentReleaseFolder();
+                $deploy = Deploy::where('folder_name', $current)->get()->first();
+                $active[$project->id] = $deploy;
+            }
+        } catch (\Exception $e) {
+            $active = null;
         }
 
         return view('projects.index', compact('projects', 'active'));
@@ -35,10 +40,16 @@ class ProjectsController extends Controller
 
     public function show(Project $project)
     {
-        $manager = new ProjectManager($project);
-        $current = $manager->getCurrentReleaseFolder();
-        $onServer = $manager->getListOfReleases();
-        $deploy = Deploy::where('folder_name', $current)->get()->first();
+        try {
+            $manager = new ProjectManager($project);
+            $current = $manager->getCurrentReleaseFolder();
+            $onServer = $manager->getListOfReleases();
+            $deploy = Deploy::where('folder_name', $current)->get()->first();
+        } catch (\Exception $e) {
+            $current = null;
+            $onServer = null;
+            $deploy = null;
+        }
 
         return view('projects.show', compact('project', 'current', 'onServer', 'deploy'));
     }

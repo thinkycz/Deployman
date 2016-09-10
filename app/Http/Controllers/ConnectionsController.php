@@ -27,11 +27,13 @@ class ConnectionsController extends Controller
     public function create()
     {
         $supportedConnectionMethods = [
-            Configuration::AUTH_BY_PASSWORD => 'Authenticate by credentials',
-            Configuration::AUTH_BY_IDENTITY_FILE => 'Authenticate by public key'
+            Configuration::AUTH_BY_IDENTITY_FILE => 'Authenticate by public key',
+            Configuration::AUTH_BY_PASSWORD => 'Authenticate by credentials'
         ];
 
-        return view('connections.create', compact('supportedConnectionMethods'));
+        $publicKey = app(RemoteConsole::class)->getPublicKey();
+
+        return view('connections.create', compact('supportedConnectionMethods', 'publicKey'));
     }
 
     public function store(Request $request)
@@ -54,13 +56,10 @@ class ConnectionsController extends Controller
 
     public function check(Connection $connection)
     {
-        try
-        {
+        try {
             $console = app(RemoteConsole::class);
             $console->useConnectionObject($connection)->run('pwd');
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return response($e->getMessage(), 400);
         }
 

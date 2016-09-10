@@ -47,33 +47,17 @@
                     <label class="col-md-4 control-label" for="password">Password</label>
                     <div class="col-md-4">
                         <input id="password" name="password" type="text" placeholder="* * * * * *" class="form-control input-md" @keyPress="passwordTyped">
-                        <span class="help-block">Enter the password (optional)</span>
+                        <span class="help-block">Enter the password</span>
                     </div>
                 </div>
             </div>
 
             <div class="auth_keys" v-if="method == 2">
                 <div class="form-group">
-                    <label class="col-md-4 control-label" for="private_key">Private key</label>
+                    <label class="col-md-4 control-label" for="publicKey">Public key</label>
                     <div class="col-md-4">
-                        <textarea class="form-control" id="private_key" name="private_key" required></textarea>
-                        <span class="help-block">Paste yout private key here</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="col-md-4 control-label" for="public_key">Public key</label>
-                    <div class="col-md-4">
-                        <textarea class="form-control" id="public_key" name="public_key"></textarea>
-                        <span class="help-block">Paste yout public key here (optional)</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="col-md-4 control-label" for="passphrase">Passphrase</label>
-                    <div class="col-md-4">
-                        <input id="passphrase" name="passphrase" type="text" placeholder="* * * * * *" class="form-control input-md">
-                        <span class="help-block">Enter the passphrase to your keys (optional)</span>
+                        <textarea class="form-control" id="publicKey" name="publicKey" rows="20" disabled>{{ $publicKey }}</textarea>
+                        <span class="help-block">Please add this key to the server's authorized_keys, so Deployman can SSH into your server and do his job :)</span>
                     </div>
                 </div>
             </div>
@@ -92,20 +76,8 @@
         const connectionForm = new Vue({
             el: '#connection_form',
             data: {
-                method: '0',
+                method: '2',
                 password: false
-            },
-            watch: {
-                method: function (value) {
-                    if (value == '2') {
-                        swal({
-                            title: "Important!",
-                            text: "Your private key will be stored as a file in our server.\n\nIf you choose to use this authentication method, you agree with storing your keys on our servers.",
-                            type: "info",
-                            confirmButtonText: "I understand"
-                        });
-                    }
-                }
             },
             methods: {
                 'passwordTyped': function () {
@@ -113,7 +85,7 @@
                         this.password = true;
                         swal({
                             title: "Important!",
-                            text: "Your password will be stored in our database in a human readable form. Deployman will use this password to SSH to your server.\n\nIf you do not want to store your password, leave this field blank.\n\nYou will be asked to type your password every time you create a task involving Deployman connecting to your server.",
+                            text: "Your password will be stored in our database in a human readable form! Unsalted, unencrypted! Deployman will use this password to SSH to your server.\n\nWe strongly recommend using public key authentication.",
                             type: "info",
                             confirmButtonText: "I understand"
                         });

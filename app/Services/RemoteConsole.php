@@ -32,7 +32,8 @@ class RemoteConsole
      * @param $host
      * @return static
      */
-    public function connectTo($host) {
+    public function connectTo($host)
+    {
         $this->config = new Configuration('connection', $host);
 
         return $this;
@@ -43,15 +44,22 @@ class RemoteConsole
      *
      * @return $this
      */
-    public function connectToLocalhost() {
+    public function connectToLocalhost()
+    {
         $this->server = new Local();
 
         return $this;
     }
 
-    public function useConnectionObject(Connection $connection) {
-        //todo connection methods
-        return $this->connectTo($connection->hostname)->withCredentials($connection->username, $connection->password);
+    public function useConnectionObject(Connection $connection)
+    {
+        if ($connection->method == Configuration::AUTH_BY_PASSWORD) {
+            return $this->connectTo($connection->hostname)->withCredentials($connection->username, $connection->password);
+        } elseif ($connection->method == Configuration::AUTH_BY_IDENTITY_FILE) {
+            return $this->connectTo($connection->hostname)->withIdentityFile();
+        } else {
+            return $this;
+        }
     }
 
     /**
@@ -62,7 +70,8 @@ class RemoteConsole
      * @return $this
      * @throws \Exception
      */
-    public function withCredentials($username, $password) {
+    public function withCredentials($username, $password)
+    {
         $this->config->setUser($username);
         $this->password($password);
         $this->server = new PhpSecLib($this->config);
@@ -179,8 +188,7 @@ class RemoteConsole
         $result = new Result($output);
 
         $deploy->addToLog('COMMAND: ' . $command);
-        foreach ($result->toArray() as $outputLine)
-        {
+        foreach ($result->toArray() as $outputLine) {
             $deploy->addToLog($outputLine);
         }
 
@@ -247,11 +255,18 @@ class RemoteConsole
      * @param $username
      * @return $this
      */
-    public function andWithUsername($username) {
+    public function andWithUsername($username)
+    {
         $this->config->setUser($username);
         $this->server = new PhpSecLib($this->config);
 
         return $this;
+    }
+
+    public function getPublicKey()
+    {
+        $this->connectToLocalhost();
+        return $this->run("cat ~/.ssh/id_rsa.pub");
     }
 
     /**

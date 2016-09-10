@@ -93,7 +93,9 @@
             </div>
         </div>
     </div>
-    @if(!$deploy->deploy_complete)
+    @if(!$deploy)
+        <div class="alert alert-danger" role="alert"><strong>Warning!!!</strong> Deployman could not connect to the server. The server may be down or unreachable.</div>
+    @elseif(!$deploy->deploy_complete)
         <div class="alert alert-danger" role="alert"><strong>Warning!!!</strong> The active release currently points to an <strong>unsuccessful deploy</strong> - the deploy script was interrupted and failed. The website may be unstable or not working at all.</div>
     @endif
     <div class="row">
@@ -139,10 +141,14 @@
                                 </button>
                             </td>
                             <td>
-                                @if(in_array($deploy->folder_name, $onServer))
-                                    <span class="label label-success"><span class="glyphicon glyphicon-search"></span> Exists</span>
+                                @if($onServer)
+                                    @if(in_array($deploy->folder_name, $onServer))
+                                        <span class="label label-success"><span class="glyphicon glyphicon-search"></span> Release found</span>
+                                    @else
+                                        <span class="label label-danger"><span class="glyphicon glyphicon-remove-circle"></span> Not found</span>
+                                    @endif
                                 @else
-                                    <span class="label label-danger"><span class="glyphicon glyphicon-trash"></span> Deleted</span>
+                                    <span class="label label-danger"><span class="glyphicon glyphicon-ban-circle"></span> Connection error</span>
                                 @endif
                             </td>
                         </tr>

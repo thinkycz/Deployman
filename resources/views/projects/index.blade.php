@@ -31,7 +31,13 @@
                     <td>{{ ucfirst($project->type) }}</td>
                     <td>{{ $project->repository }}</td>
                     <td>{{ $project->path }}</td>
-                    <td>{{ $active[$project->id] }}</td>
+                    <td>
+                        @if($active)
+                            <span class="label label-{{ $active[$project->id]->deploy_complete ? 'success' : 'danger' }}">{{ $active[$project->id]->folder_name }}</span>
+                            @else
+                            <span class="label label-danger">Connection error</span>
+                        @endif
+                    </td>
                 </tr>
             @endforeach
             </tbody>
