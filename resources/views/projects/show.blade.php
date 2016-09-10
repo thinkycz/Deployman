@@ -68,6 +68,9 @@
                         <button id="delete-project" data-project-id="{{ $project->id }}" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span> Delete this project</button>
                     </li>
                     <li class="list-group-item">
+                        <button id="rollback-project" data-project-id="{{ $project->id }}" class="btn btn-info btn-xs"><span class="glyphicon glyphicon-fast-backward"></span> Roll back to previous release and delete latest</button>
+                    </li>
+                    <li class="list-group-item">
                         <form class="form-horizontal" id="deploy-form">
                             <div class="form-group">
                                 <label class="col-md-3 control-label" for="branch">Branch</label>
@@ -90,6 +93,9 @@
             </div>
         </div>
     </div>
+    @if(!$deploy->deploy_complete)
+        <div class="alert alert-danger" role="alert"><strong>Warning!!!</strong> The active release currently points to an <strong>unsuccessful deploy</strong> - the deploy script was interrupted and failed. The website may be unstable or not working at all.</div>
+    @endif
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">
@@ -188,6 +194,39 @@
             button.html('<span class="glyphicon glyphicon-cloud-upload"></span> Deploy ' + commit + ' from ' + branch);
         });
 
+        $('#rollback-project').click(function () {
+            var btn = $(this);
+            var id = $(this).attr('data-project-id');
+            var text = $(this).html();
+
+            btn.html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Please wait ...');
+            btn.attr('disabled', true);
+
+            swal({
+                title: "Are you sure?",
+                text: "This will remove the active release deploy and switch to the previous one, proceed?",
+                type: "info",
+                showCancelButton: true,
+                confirmButtonColor: "#23B8D8",
+                confirmButtonText: "Yes, roll it back!",
+                closeOnConfirm: false,
+                showLoaderOnConfirm: true
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    $.ajax({
+                        url: '/projects/' + id + '/rollback'
+                    }).done(function () {
+                        swal("Rollback successful", "Deployman has activated the previous commit.", "success");
+                        location.reload();
+                    }).fail(function (data) {
+                        swal("Rollback failed", "Deployman couldn't finish the rollback.\n\nError: " + data.responseText, "error");
+                    });
+                }
+                btn.html(text);
+                btn.attr('disabled', false);
+            });
+        });
+
         $('#test-server').click(function () {
             var btn = $(this);
             var id = $(this).attr('data-project-id');
@@ -251,10 +290,9 @@
                         url: '/projects/' + id + '/cleanup'
                     }).done(function () {
                         swal("Cleanup successful", "Deployman has removed your old deploys.", "success");
+                        location.reload();
                     }).fail(function (data) {
                         swal("Cleanup failed", "Deployman couldn't finish the cleanup.\n\nError: " + data.responseText, "error");
-                    }).always(function () {
-                        location.reload();
                     });
                 }
                 btn.html(text);

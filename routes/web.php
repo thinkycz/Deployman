@@ -16,6 +16,7 @@ Route::get('/connections/{connection}/check', 'ConnectionsController@check');
 Route::get('/projects/{project}/check', 'ProjectsController@check');
 Route::get('/projects/{project}/deploy', 'ProjectsController@deploy');
 Route::get('/projects/{project}/cleanup', 'ProjectsController@cleanup');
+Route::get('/projects/{project}/rollback', 'ProjectsController@rollback');
 Route::get('/deploys/{deploy}/fire', 'DeploysController@fire');
 Route::get('/deploys/{deploy}/status', 'DeploysController@status');
 

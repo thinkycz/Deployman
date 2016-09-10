@@ -38,8 +38,9 @@ class ProjectsController extends Controller
         $manager = new ProjectManager($project);
         $current = $manager->getCurrentReleaseFolder();
         $onServer = $manager->getListOfReleases();
+        $deploy = Deploy::where('folder_name', $current)->get()->first();
 
-        return view('projects.show', compact('project', 'current', 'onServer'));
+        return view('projects.show', compact('project', 'current', 'onServer', 'deploy'));
     }
 
     public function create()
@@ -94,6 +95,18 @@ class ProjectsController extends Controller
         try {
             $manager = new ProjectManager($project);
             $manager->cleanupOldReleases();
+        } catch (\Exception $e) {
+            return response($e->getMessage(), 400);
+        }
+
+        return response('success');
+    }
+
+    public function rollback(Project $project)
+    {
+        try {
+            $manager = new ProjectManager($project);
+            $manager->rollbackToPreviousRelease();
         } catch (\Exception $e) {
             return response($e->getMessage(), 400);
         }
