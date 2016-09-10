@@ -33,7 +33,7 @@
                 <div class="project-box" data-project-id="{{ $project->id }}">
                     <div class="col-md-6">
                         <div class="panel panel-info">
-                            <div class="panel-heading"><strong>{{ $project->name }}</strong></div>
+                            <div class="panel-heading"><a href="{{ action('ProjectsController@show', $project) }}"><strong>{{ $project->name }}</strong></a></div>
                             <ul class="list-group">
                                 <li class="list-group-item">
                                     <div class="row">
