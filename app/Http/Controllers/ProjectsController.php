@@ -22,23 +22,15 @@ class ProjectsController extends Controller
     public function index()
     {
         $projects = auth()->user()->projects;
-        $active = [];
-
-        try {
-            foreach ($projects as $project) {
-                $manager = new ProjectManager($project);
-                $current = $manager->getCurrentReleaseFolder();
-                $deploy = Deploy::where('folder_name', $current)->get()->first();
-                $active[$project->id] = $deploy;
-            }
-        } catch (\Exception $e) {
-            $active = null;
-        }
-
-        return view('projects.index', compact('projects', 'active'));
+        return view('projects.index', compact('projects'));
     }
 
     public function show(Project $project)
+    {
+        return view('projects.show', compact('project'));
+    }
+
+    public function getCurrentDeploy(Project $project)
     {
         try {
             $manager = new ProjectManager($project);
@@ -46,12 +38,10 @@ class ProjectsController extends Controller
             $onServer = $manager->getListOfReleases();
             $deploy = Deploy::where('folder_name', $current)->get()->first();
         } catch (\Exception $e) {
-            $current = null;
-            $onServer = null;
-            $deploy = null;
+            return response($e->getMessage(), 400);
         }
 
-        return view('projects.show', compact('project', 'current', 'onServer', 'deploy'));
+        return compact('onServer', 'deploy');
     }
 
     public function create()

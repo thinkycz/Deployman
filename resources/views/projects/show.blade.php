@@ -47,7 +47,7 @@
                     <li class="list-group-item">
                         <div class="row">
                             <div class="col-md-4 text"><strong>Active release:</strong></div>
-                            <div class="col-md-8">{{ $current }}</div>
+                            <div class="col-md-8 active-release"><span class="label label-primary"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Connecting ...</span></div>
                         </div>
                     </li>
                 </ul>
@@ -60,28 +60,43 @@
                 </div>
                 <ul class="list-group">
                     <li class="list-group-item">
-                        <button id="test-server" data-project-id="{{ $project->connection->id }}" class="btn btn-primary btn-xs">Test connection to server</button>
-                        <button id="test-repo" data-project-id="{{ $project->id }}" class="btn btn-primary btn-xs">Test connection to Git</button>
+                        <button id="test-server" data-project-id="{{ $project->connection->id }}"
+                                class="btn btn-primary btn-xs">Test connection to server
+                        </button>
+                        <button id="test-repo" data-project-id="{{ $project->id }}" class="btn btn-primary btn-xs">Test
+                            connection to Git
+                        </button>
                     </li>
                     <li class="list-group-item">
-                        <button id="cleanup-project" data-project-id="{{ $project->id }}" class="btn btn-warning btn-xs"><span class="glyphicon glyphicon-leaf"></span> Cleanup old releases</button>
-                        <button id="delete-project" data-project-id="{{ $project->id }}" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span> Delete this project</button>
+                        <button id="cleanup-project" data-project-id="{{ $project->id }}"
+                                class="btn btn-warning btn-xs"><span class="glyphicon glyphicon-leaf"></span> Cleanup
+                            old releases
+                        </button>
+                        <button id="delete-project" data-project-id="{{ $project->id }}" class="btn btn-danger btn-xs">
+                            <span class="glyphicon glyphicon-trash"></span> Delete this project
+                        </button>
                     </li>
                     <li class="list-group-item">
-                        <button id="rollback-project" data-project-id="{{ $project->id }}" class="btn btn-info btn-xs"><span class="glyphicon glyphicon-fast-backward"></span> Roll back to previous release and delete latest</button>
+                        <button id="rollback-project" data-project-id="{{ $project->id }}" class="btn btn-info btn-xs">
+                            <span class="glyphicon glyphicon-fast-backward"></span> Roll back to previous release and
+                            delete latest
+                        </button>
                     </li>
                     <li class="list-group-item">
                         <form class="form-horizontal" id="deploy-form">
                             <div class="form-group">
                                 <label class="col-md-3 control-label" for="branch">Branch</label>
                                 <div class="col-md-9">
-                                    <input id="branch" name="branch" type="text" placeholder="eg. develop" class="form-control input-md">
+                                    <input id="branch" name="branch" type="text" placeholder="eg. develop"
+                                           class="form-control input-md">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-md-3 control-label" for="commit">Commit</label>
                                 <div class="col-md-9">
-                                    <input id="commit" name="commit" type="text" placeholder="eg. b2599ac7998893cf62cf4a6f625dd92c770c2484" class="form-control input-md">
+                                    <input id="commit" name="commit" type="text"
+                                           placeholder="eg. b2599ac7998893cf62cf4a6f625dd92c770c2484"
+                                           class="form-control input-md">
                                 </div>
                             </div>
                             <button id="deploy-now" data-project-id="{{ $project->id }}" class="btn btn-success">
@@ -93,11 +108,16 @@
             </div>
         </div>
     </div>
-    @if(!$deploy)
-        <div class="alert alert-danger" role="alert"><strong>Warning!!!</strong> Deployman could not connect to the server. The server may be down or unreachable.</div>
-    @elseif(!$deploy->deploy_complete)
-        <div class="alert alert-danger" role="alert"><strong>Warning!!!</strong> The active release currently points to an <strong>unsuccessful deploy</strong> - the deploy script was interrupted and failed. The website may be unstable or not working at all.</div>
-    @endif
+
+    <div class="alert alert-danger connection-failed" role="alert" style="display: none"><strong>Warning!!!</strong>
+        Deployman could not connect to the server. The server may be down or unreachable.
+    </div>
+
+    <div class="alert alert-danger unsuccessful-deploy" role="alert" style="display:none;"><strong>Warning!!!</strong>
+        The active release currently points to an <strong>unsuccessful deploy</strong> - the deploy script was
+        interrupted and failed. The website may be unstable or not working at all.
+    </div>
+
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">
@@ -116,18 +136,19 @@
                         <th>On server</th>
                     </tr>
                     @foreach($project->deploys()->latest()->get() as $deploy)
-                        <tr class="{{ $deploy->folder_name == $current ? 'success' : '' }}">
+                        <tr class="deploy-row">
                             <th scope="row">{{ $deploy->id }}</th>
                             <td>
                                 <a href="{{ action('DeploysController@show', $deploy) }}">{{ substr($deploy->commit_hash, 0, 7) ?: 'unknown' }}</a>
                             </td>
-                            <td>{{ $deploy->folder_name }}</td>
+                            <td class="folder-name">{{ $deploy->folder_name }}</td>
                             <td>{{ $deploy->created_at->diffForHumans() }}</td>
                             <td>{{ $deploy->deploy_complete ? $deploy->created_at->diffInSeconds($deploy->finished_at) : '*' }}
                                 seconds
                             </td>
                             <td>
-                                <button class="showStatusWindow btn btn-xs btn-{{ $deploy->status == 'pending' ? 'info' : ($deploy->status == 'running' ? 'warning' : ($deploy->status == 'finished' ? 'success' : 'danger')) }}" data-deploy-id="{{ $deploy->id }}">
+                                <button class="showStatusWindow btn btn-xs btn-{{ $deploy->status == 'pending' ? 'info' : ($deploy->status == 'running' ? 'warning' : ($deploy->status == 'finished' ? 'success' : 'danger')) }}"
+                                        data-deploy-id="{{ $deploy->id }}">
                                     @if($deploy->status == 'running')
                                         <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
                                     @elseif($deploy->status == 'pending')
@@ -140,17 +161,7 @@
                                     {{ ucfirst($deploy->status) }}
                                 </button>
                             </td>
-                            <td>
-                                @if($onServer)
-                                    @if(in_array($deploy->folder_name, $onServer))
-                                        <span class="label label-success"><span class="glyphicon glyphicon-search"></span> Release found</span>
-                                    @else
-                                        <span class="label label-danger"><span class="glyphicon glyphicon-remove-circle"></span> Not found</span>
-                                    @endif
-                                @else
-                                    <span class="label label-danger"><span class="glyphicon glyphicon-ban-circle"></span> Connection error</span>
-                                @endif
-                            </td>
+                            <td class="on-server"><span class="label label-primary"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Connecting ...</span></td>
                         </tr>
                     @endforeach
                 </table>
@@ -179,6 +190,39 @@
                 minWidth: 800,
                 height: 600,
                 title: "Deployment status"
+            });
+
+            var id = $("#deploy-now").attr('data-project-id');
+            var field = $(this).find(".on-server");
+
+            $.ajax({
+                url: '/projects/' + id + '/getCurrentDeploy'
+            }).done(function (data) {
+                if (data.deploy.deploy_complete == false)
+                {
+                    $('.unsuccessful-deploy').show();
+                }
+
+                $('.active-release').html(data.deploy.folder_name);
+
+                $(".deploy-row").each(function () {
+                    field = $(this).find(".on-server");
+                    var folder = $(this).find(".folder-name").html();
+
+                    if (folder == data.deploy.folder_name) {
+                        $(this).addClass('success');
+                    }
+
+                    if ($.inArray(folder, data.onServer) != -1) {
+                        field.html('<span class="label label-success"><span class="glyphicon glyphicon-search"></span> Release found</span>');
+                    } else {
+                        field.html('<span class="label label-danger"><span class="glyphicon glyphicon-remove-circle"></span> Not found</span>');
+                    }
+                })
+            }).fail(function () {
+                field.html('<span class="label label-danger"><span class="glyphicon glyphicon-ban-circle"></span> Connection error</span>');
+                $('.active-release').html('<span class="label label-danger"><span class="glyphicon glyphicon-ban-circle"></span> Connection error</span>');
+                $('.connection-failed').show();
             });
         });
 

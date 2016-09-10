@@ -31,16 +31,34 @@
                     <td>{{ ucfirst($project->type) }}</td>
                     <td>{{ $project->repository }}</td>
                     <td>{{ $project->path }}</td>
-                    <td>
-                        @if($active)
-                            <span class="label label-{{ $active[$project->id]->deploy_complete ? 'success' : 'danger' }}">{{ $active[$project->id]->folder_name }}</span>
-                            @else
-                            <span class="label label-danger">Connection error</span>
-                        @endif
-                    </td>
+                    <td class="active-revision" data-project-id="{{ $project->id }}"><span class="label label-primary" ><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Connecting ...</span></td>
                 </tr>
             @endforeach
             </tbody>
         </table>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        $(document).ready(function(){
+            $('.active-revision').each(function () {
+                var field = $(this);
+                var id = $(this).attr('data-project-id');
+
+                $.ajax({
+                    url: '/projects/' + id + '/getCurrentDeploy'
+                }).done(function (data) {
+                    if (data.deploy.deploy_complete) {
+                        field.html('<span class="label label-success">' + data.deploy.folder_name + '</span>');
+                    } else {
+                        field.html('<span class="label label-danger">' + data.deploy.folder_name + '</span>');
+                    }
+
+                }).fail(function () {
+                    field.html('<span class="label label-danger"><span class="glyphicon glyphicon-ban-circle"></span> Connection error</span>');
+                });
+            })
+        });
+    </script>
 @endsection
