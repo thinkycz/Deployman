@@ -109,7 +109,8 @@ class ProjectManager
      * @param bool $useSudo
      * @return bool
      */
-    public function cleanupCustomPaths($paths, $useSudo = true) {
+    public function cleanupCustomPaths($paths, $useSudo = true)
+    {
         $sudo  = $useSudo ? 'sudo' : '';
 
         foreach ($paths as $path) {

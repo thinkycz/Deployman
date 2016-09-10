@@ -56,7 +56,7 @@ class RemoteConsole
         if ($connection->method == Configuration::AUTH_BY_PASSWORD) {
             return $this->connectTo($connection->hostname)->withCredentials($connection->username, $connection->password);
         } elseif ($connection->method == Configuration::AUTH_BY_IDENTITY_FILE) {
-            return $this->connectTo($connection->hostname)->withIdentityFile();
+            return $this->connectTo($connection->hostname)->withIdentityFile()->andWithUsername($connection->username);
         } else {
             return $this;
         }

@@ -112,7 +112,7 @@
     </div>
 
     <div class="alert alert-danger connection-failed" role="alert" style="display: none"><strong>Warning!!!</strong>
-        Deployman could not connect to the server. The server may be down or unreachable.
+        Deployman could not connect to the server and load this project. Possible reasons: 1. The server may be down or unreachable. 2. Project is not initialized.
     </div>
 
     <div class="alert alert-danger unsuccessful-deploy" role="alert" style="display:none;"><strong>Warning!!!</strong>
@@ -208,7 +208,7 @@
                     }
                     $('.active-release').html(data.deploy.folder_name);
                 } else {
-                    $('.active-release').html('Not available');
+                    $('.active-release').html('<span class="label label-danger"><span class="glyphicon glyphicon-ban-circle"></span> Not available</span>');
                 }
 
                 $(".deploy-row").each(function () {
@@ -226,8 +226,8 @@
                     }
                 })
             }).fail(function () {
-                field.html('<span class="label label-danger"><span class="glyphicon glyphicon-ban-circle"></span> Connection error</span>');
-                $('.active-release').html('<span class="label label-danger"><span class="glyphicon glyphicon-ban-circle"></span> Connection error</span>');
+                field.html('<span class="label label-danger"><span class="glyphicon glyphicon-ban-circle"></span> Not available</span>');
+                $('.active-release').html('<span class="label label-danger"><span class="glyphicon glyphicon-ban-circle"></span> Not available</span>');
                 $('.connection-failed').show();
             });
         });

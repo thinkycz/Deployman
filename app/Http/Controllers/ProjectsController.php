@@ -48,7 +48,9 @@ class ProjectsController extends Controller
     {
         $supportedProjectTypes = [
             ProjectType::STATIC_PAGES => 'Static pages',
-            ProjectType::LARAVEL => 'Laravel'
+            ProjectType::LARAVEL => 'Laravel',
+            ProjectType::SYMFONY2 => 'Symfony2',
+            ProjectType::SYMFONY3 => 'Symfony3'
         ];
 
         /** @var Collection $connections */

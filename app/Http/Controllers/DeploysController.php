@@ -7,6 +7,8 @@ use App\Helpers\ProjectType;
 use App\Services\BaseDeployer;
 use App\Services\LaravelDeployer;
 use App\Services\StaticPagesDeployer;
+use App\Services\Symfony3Deployer;
+use App\Services\SymfonyDeloyer;
 
 class DeploysController extends Controller
 {
@@ -60,6 +62,10 @@ class DeploysController extends Controller
         switch ($deploy->project->type) {
             case ProjectType::LARAVEL:
                 return new LaravelDeployer($deploy);
+            case ProjectType::SYMFONY2:
+                return new SymfonyDeloyer($deploy);
+            case ProjectType::SYMFONY3:
+                return new Symfony3Deployer($deploy);
             case ProjectType::STATIC_PAGES:
                 return new StaticPagesDeployer($deploy);
             default:

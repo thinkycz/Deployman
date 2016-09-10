@@ -59,11 +59,10 @@
                             field.html('<span class="label label-danger">' + data.deploy.folder_name + '</span>');
                         }
                     } else {
-                        field.html('<span class="label label-info">Not available</span>');
+                        field.html('<span class="label label-danger"><span class="glyphicon glyphicon-ban-circle"></span> Not available</span>');
                     }
-
                 }).fail(function () {
-                    field.html('<span class="label label-danger"><span class="glyphicon glyphicon-ban-circle"></span> Connection error</span>');
+                    field.html('<span class="label label-danger"><span class="glyphicon glyphicon-ban-circle"></span> Not available</span>');
                 });
             })
         });
