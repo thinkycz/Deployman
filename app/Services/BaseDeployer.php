@@ -190,10 +190,8 @@ class BaseDeployer extends ProjectManager
             $this->console->runAndLog("$git clone $at $depth --recursive -q $repository $this->releasePath 2>&1", $this->deploy);
         }
 
-        if (empty($this->deploy->commit_hash)) {
-            $this->deploy->commit_hash = $this->console->runAndLog("cd $this->releasePath && git rev-parse HEAD", $this->deploy)->toString();
-            $this->deploy->save();
-        }
+        $this->deploy->commit_hash = $this->console->runAndLog("cd $this->releasePath && git rev-parse HEAD", $this->deploy)->toString();
+        $this->deploy->save();
 
         return $this->deploy;
     }

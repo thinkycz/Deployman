@@ -108,7 +108,7 @@
                         <th>On server</th>
                     </tr>
                     @foreach($project->deploys()->latest()->get() as $deploy)
-                        <tr>
+                        <tr class="{{ $deploy->folder_name == $current ? 'success' : '' }}">
                             <th scope="row">{{ $deploy->id }}</th>
                             <td>
                                 <a href="{{ action('DeploysController@show', $deploy) }}">{{ substr($deploy->commit_hash, 0, 7) ?: 'unknown' }}</a>
