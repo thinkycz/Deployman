@@ -44,6 +44,12 @@
                             <div class="col-md-8">{{ $project->path }}</div>
                         </div>
                     </li>
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-md-4 text"><strong>Active release:</strong></div>
+                            <div class="col-md-8">{{ $current }}</div>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -54,24 +60,34 @@
                 </div>
                 <ul class="list-group">
                     <li class="list-group-item">
-                        <button id="test-server" data-project-id="{{ $project->connection->id }}"
-                                class="btn btn-primary btn-xs">Test connection to the server
+                        <button id="test-server" data-project-id="{{ $project->connection->id }}" class="btn btn-primary btn-xs">Test connection to server</button>
+                        <button id="test-repo" data-project-id="{{ $project->id }}" class="btn btn-primary btn-xs">Test connection to Git</button>
+                    </li>
+                    <li class="list-group-item">
+                        <button id="cleanup-project" data-project-id="{{ $project->id }}" class="btn btn-warning btn-xs"><span class="glyphicon glyphicon-leaf"></span> Cleanup old releases</button>
+                        <button id="delete-project" data-project-id="{{ $project->id }}" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span> Delete this project</button>
+                    </li>
+                    <li class="list-group-item">
+                        <button id="deploy-now" data-project-id="{{ $project->id }}" class="btn btn-success">
+                            <span class="glyphicon glyphicon-cloud-upload"></span> Deploy latest commit from master
                         </button>
                     </li>
                     <li class="list-group-item">
-                        <button id="test-repo" data-project-id="{{ $project->id }}" class="btn btn-primary btn-xs">Test
-                            connection to repository
-                        </button>
-                    </li>
-                    <li class="list-group-item">
-                        <button id="delete-project" data-project-id="{{ $project->id }}" class="btn btn-danger btn-xs">
-                            <span class="glyphicon glyphicon-trash"></span> Delete this project
-                        </button>
-                    </li>
-                    <li class="list-group-item">
-                        <button id="deploy-now" data-project-id="{{ $project->id }}" class="btn btn-success btn-lg">
-                            <span class="glyphicon glyphicon-cloud-upload"></span> Deploy now !
-                        </button>
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-md-3 control-label" for="textinput">Branch</label>
+                                <div class="col-md-9">
+                                    <input id="textinput" name="textinput" type="text" placeholder="eg. develop" class="form-control input-md">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label" for="textinput">Commit</label>
+                                <div class="col-md-9">
+                                    <input id="textinput" name="textinput" type="text" placeholder="eg. b2599ac7998893cf62cf4a6f625dd92c770c2484" class="form-control input-md">
+                                </div>
+                            </div>
+                            <input type="submit" class="btn btn-success" value="Deploy with this configuration">
+                        </form>
                     </li>
                 </ul>
             </div>
@@ -88,6 +104,7 @@
                     <tr>
                         <th>#</th>
                         <th>Revision</th>
+                        <th>Directory</th>
                         <th>Deployed</th>
                         <th>Duration</th>
                         <th>Status</th>
@@ -98,6 +115,7 @@
                             <td>
                                 <a href="{{ action('DeploysController@show', $deploy) }}">{{ substr($deploy->commit_hash, 0, 7) ?: 'unknown' }}</a>
                             </td>
+                            <td>{{ $deploy->folder_name }}</td>
                             <td>{{ $deploy->created_at->diffForHumans() }}</td>
                             <td>{{ $deploy->deploy_complete ? $deploy->created_at->diffInSeconds($deploy->finished_at) : '*' }}
                                 seconds
@@ -187,6 +205,38 @@
             });
         });
 
+        $('#cleanup-project').click(function () {
+            var btn = $(this);
+            var id = $(this).attr('data-project-id');
+            var text = $(this).html();
+
+            btn.html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Please wait ...');
+            btn.attr('disabled', true);
+
+            swal({
+                title: "Are you sure?",
+                text: "This will remove all deploys except latest 3, proceed?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#F4A146",
+                confirmButtonText: "Yes, clean it!",
+                closeOnConfirm: false,
+                showLoaderOnConfirm: true
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    $.ajax({
+                        url: '/projects/' + id + '/cleanup'
+                    }).done(function () {
+                        swal("Cleanup successful", "Deployman has removed your old deploys.", "success");
+                    }).fail(function (data) {
+                        swal("Cleanup failed", "Deployman couldn't finish the cleanup.\n\nError: " + data.responseText, "error");
+                    });
+                }
+                btn.html(text);
+                btn.attr('disabled', false);
+            });
+        });
+
         $('table.table').on('click', '.showStatusWindow', function () {
             var deploy = $(this).attr('data-deploy-id');
             var dialog = $("#dialog");
@@ -218,6 +268,7 @@
                 updateStatus(deploy);
                 if (finished) clearInterval(loop);
                 dialog.on("dialogclose", function () {
+                    location.reload();
                     clearInterval(loop);
                     dialog.html(dialogDefaultText);
                 });
@@ -289,6 +340,7 @@
                         updateStatus(data.id);
                         if (finished) clearInterval(loop);
                         dialog.on("dialogclose", function () {
+                            location.reload();
                             clearInterval(loop);
                             dialog.html(dialogDefaultText);
                         });

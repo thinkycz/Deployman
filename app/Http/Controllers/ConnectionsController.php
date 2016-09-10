@@ -10,19 +10,11 @@ use Illuminate\Http\Request;
 class ConnectionsController extends Controller
 {
     /**
-     * @var RemoteConsole
-     */
-    private $console;
-
-    /**
      * ConnectionsController constructor.
-     * @param RemoteConsole $console
      */
-    public function __construct(RemoteConsole $console)
+    public function __construct()
     {
         $this->middleware('auth');
-
-        $this->console = $console;
     }
 
     public function index()
@@ -36,7 +28,7 @@ class ConnectionsController extends Controller
     {
         $supportedConnectionMethods = [
             Configuration::AUTH_BY_PASSWORD => 'Authenticate by credentials',
-            Configuration::AUTH_BY_IDENTITY_FILE => 'Authenticate by public and private keys'
+            Configuration::AUTH_BY_IDENTITY_FILE => 'Authenticate by public key'
         ];
 
         return view('connections.create', compact('supportedConnectionMethods'));
@@ -55,11 +47,6 @@ class ConnectionsController extends Controller
         if ($connection->method == Configuration::AUTH_BY_PASSWORD) {
             $connection->password = $request->has('password') ? $request->get('password') : null;
             $connection->save();
-        } elseif ($connection->method == Configuration::AUTH_BY_IDENTITY_FILE) {
-            $connection->public_key = $request->has('public_key') ? $request->get('public_key') : null;
-            $connection->private_key = $request->has('private_key') ? $request->get('private_key') : null;
-            $connection->passphrase = $request->has('passphrase') ? $request->get('passphrase') : null;
-            $connection->save();
         }
 
         return redirect(action('ConnectionsController@index'));
@@ -67,18 +54,10 @@ class ConnectionsController extends Controller
 
     public function check(Connection $connection)
     {
-        return $this->checkSSHConnection($connection);
-    }
-
-    private function checkSSHConnection(Connection $connection)
-    {
-        $hostname = $connection->hostname;
-        $username = $connection->username;
-        $password = $connection->password;
-
         try
         {
-            $this->console->connectTo($hostname)->withCredentials($username, $password)->run('pwd');
+            $console = app(RemoteConsole::class);
+            $console->useConnectionObject($connection)->run('pwd');
         }
         catch (\Exception $e)
         {

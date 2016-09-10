@@ -5,25 +5,18 @@ namespace App\Http\Controllers;
 use App\Deploy;
 use App\Helpers\ProjectType;
 use App\Project;
-use App\Services\RemoteConsole;
+use App\Services\ProjectManager;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
 class ProjectsController extends Controller
 {
     /**
-     * @var RemoteConsole
-     */
-    private $console;
-
-    /**
      * ProjectsController constructor.
-     * @param RemoteConsole $console
      */
-    public function __construct(RemoteConsole $console)
+    public function __construct()
     {
         $this->middleware('auth');
-        $this->console = $console;
     }
 
     public function index()
@@ -35,7 +28,9 @@ class ProjectsController extends Controller
 
     public function show(Project $project)
     {
-        return view('projects.show', compact('project'));
+        $manager = new ProjectManager($project);
+        $current = $manager->getCurrentReleaseFolder();
+        return view('projects.show', compact('project', 'current'));
     }
 
     public function create()
@@ -83,16 +78,27 @@ class ProjectsController extends Controller
         ]);
     }
 
-    private function checkRepositoryConnection(Project $project)
+    public function cleanup(Project $project)
     {
-        $connection = $project->connection;
-        $hostname = $connection->hostname;
-        $username = $connection->username;
-        $password = $connection->password;
-
         try
         {
-            $this->console->connectTo($hostname)->withCredentials($username, $password)->run("git ls-remote -h $project->repository");
+            $manager = new ProjectManager($project);
+            $manager->cleanupOldReleases();
+        }
+        catch (\Exception $e)
+        {
+            return response($e->getMessage(), 400);
+        }
+
+        return response('success');
+    }
+
+    private function checkRepositoryConnection(Project $project)
+    {
+        try
+        {
+            $manager = new ProjectManager($project);
+            $manager->getConsole()->run("git ls-remote -h $project->repository");
         }
         catch (\Exception $e)
         {

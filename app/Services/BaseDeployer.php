@@ -4,24 +4,15 @@ namespace App\Services;
 
 use App\Deploy;
 use App\Helpers\DeployStatus;
+use App\Project;
 use RuntimeException;
 
 /**
  * Class BaseDeployer
  * @package App\Services
  */
-class BaseDeployer
+class BaseDeployer extends ProjectManager
 {
-    /**
-     * @var RemoteConsole
-     */
-    protected $console;
-
-    /**
-     * @var string
-     */
-    protected $deployPath;
-
     /**
      * @var string
      */
@@ -33,6 +24,24 @@ class BaseDeployer
     protected $deploy;
 
     /**
+     * DeployHelper constructor.
+     * @param Deploy $deploy
+     */
+    public function __construct(Deploy $deploy)
+    {
+
+        parent::__construct($deploy->project);
+
+        $this->deploy = $deploy;
+        $this->deployPath = $deploy->project->path;
+        $this->releasePath = "$this->deployPath/releases/$deploy->folder_name";
+    }
+
+    /**
+     *  =========== Helper methods ===========
+     */
+
+    /**
      * @return Deploy
      */
     public function run()
@@ -41,169 +50,6 @@ class BaseDeployer
         $this->deploy->setStatus(DeployStatus::FAILED);
         $this->deploy->addToLog('ERROR: This project type is not supported.');
         return $this->deploy;
-    }
-
-    /**
-     * DeployHelper constructor.
-     * @param RemoteConsole $console
-     * @param Deploy $deploy
-     */
-    public function __construct(RemoteConsole $console, Deploy $deploy)
-    {
-        $this->console = $console;
-        $this->deploy = $deploy;
-        $this->deployPath = $deploy->project->path;
-        $this->releasePath = "$this->deployPath/releases/$deploy->folder_name";
-    }
-
-    /**
-     * Return list of releases on server.
-     */
-    public function getListOfReleases()
-    {
-        // find will list only dirs in releases/
-        $list = $this->console->runAndLog("find $this->deployPath/releases -maxdepth 1 -mindepth 1 -type d", $this->deploy)->toArray();
-
-        // filter out anything that does not look like a release
-        foreach ($list as $key => $item) {
-            $item = basename($item); // strip path returned from find
-
-            // release dir can look like this: 20160216152237 or 20160216152237.1.2.3.4 ...
-            $name_match = '[0-9]{14}'; // 20160216152237
-            $extension_match = '\.[0-9]+'; // .1 or .15 etc
-            if (!preg_match("/^$name_match($extension_match)*$/", $item)) {
-                unset($list[$key]); // dir name does not match pattern, throw it out
-                continue;
-            }
-
-            $list[$key] = $item; // $item was changed
-        }
-
-        rsort($list);
-
-        return $list;
-    }
-
-    /**
-     * Return current release path.
-     */
-    public function getCurrentReleasePath()
-    {
-        return $this->console->runAndLog("readlink $this->deployPath/current", $this->deploy)->toString();
-    }
-
-    /**
-     * Return the current release timestamp
-     */
-    public function getCurrentReleaseFolder()
-    {
-        return basename($this->getCurrentReleasePath());
-    }
-
-    /**
-     * @return string
-     */
-    public function getCurrentCommitHash()
-    {
-        return $this->console->runAndLog("cd $this->deployPath/current && git rev-parse HEAD", $this->deploy)->toString();
-    }
-
-    /**
-     * Cleanup old releases.
-     * @param int $keep
-     * @return bool
-     */
-    public function cleanupOldReleases($keep = 3)
-    {
-        $releases = $this->getListOfReleases();
-
-        while ($keep > 0) {
-            array_shift($releases);
-            --$keep;
-        }
-
-        foreach ($releases as $release) {
-            $this->console->runAndLog("rm -rf $this->deployPath/releases/$release", $this->deploy);
-        }
-
-        $this->console->runAndLog("cd $this->deployPath && if [ -e release ]; then rm release; fi", $this->deploy);
-        $this->console->runAndLog("cd $this->deployPath && if [ -h release ]; then rm release; fi", $this->deploy);
-
-        return $this->getListOfReleases();
-    }
-
-    /**
-     * Cleanup files and directories
-     * @param $paths array
-     * @param bool $useSudo
-     * @return bool
-     */
-    public function cleanupCustomPaths($paths, $useSudo = true) {
-        $sudo  = $useSudo ? 'sudo' : '';
-
-        foreach ($paths as $path) {
-            $this->console->runAndLog("$sudo rm -rf $this->deployPath/$path", $this->deploy);
-        }
-
-        return true;
-    }
-
-    /**
-     * Rollback to previous release.
-     */
-    public function rollbackToPreviousRelease()
-    {
-        $releases = $this->getListOfReleases();
-
-        if (isset($releases[1])) {
-            $releaseDir = "$this->deployPath/releases/{$releases[1]}";
-
-            // Symlink to old release.
-            $this->console->runAndLog("cd $this->deployPath && ln -nfs $releaseDir current", $this->deploy);
-
-            // Remove release
-            $this->console->runAndLog("rm -rf $this->deployPath/releases/{$releases[0]}", $this->deploy);
-
-            return $releaseDir;
-        } else {
-            throw new \Exception('No more releases you can revert to.');
-        }
-    }
-
-    /**
-     * Whether to use git cache - faster cloning by borrowing objects from existing clones.
-     *
-     * @return mixed
-     */
-    protected function useGitCache()
-    {
-        $git = $this->getGitBinary();
-        $gitVersion = $this->console->runAndLog("$git version", $this->deploy);
-        $regs = [];
-
-        if (preg_match('/((\d+\.?)+)/', $gitVersion, $regs)) {
-            $version = $regs[1];
-        } else {
-            $version = "1.0.0";
-        }
-
-        return version_compare($version, '2.3', '>=');
-    }
-
-    /**
-     * @return string
-     */
-    protected function getPHPBinary()
-    {
-        return $this->console->runAndLog('which php', $this->deploy)->toString();
-    }
-
-    /**
-     * @return string
-     */
-    protected function getGitBinary()
-    {
-        return $this->console->runAndLog('which git', $this->deploy)->toString();
     }
 
     /**

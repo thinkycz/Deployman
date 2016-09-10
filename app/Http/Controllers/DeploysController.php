@@ -4,27 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Deploy;
 use App\Helpers\ProjectType;
-use App\Project;
 use App\Services\BaseDeployer;
 use App\Services\LaravelDeployer;
-use App\Services\RemoteConsole;
 use App\Services\StaticPagesDeployer;
 
 class DeploysController extends Controller
 {
     /**
-     * @var RemoteConsole
-     */
-    private $console;
-
-    /**
      * DeploysController constructor.
-     * @param RemoteConsole $console
      */
-    public function __construct(RemoteConsole $console)
+    public function __construct()
     {
         $this->middleware('auth');
-        $this->console = $console;
     }
 
     public function index()
@@ -41,15 +32,11 @@ class DeploysController extends Controller
 
     public function fire(Deploy $deploy)
     {
-        if (Deploy::where('status', 'running')->get()->isEmpty()) {
-
-            $this->console->useConnectionObject($deploy->project->connection);
-            $deployer = $this->determineProjectDeployer($deploy);
-
-        } else {
+        while(!Deploy::where('status', 'running')->get()->isEmpty())
+        {
             sleep(5);
-            $this->fire($deploy);
         }
+        $deployer = $this->determineProjectDeployer($deploy);
         return $deployer->run();
     }
 
@@ -74,11 +61,11 @@ class DeploysController extends Controller
         switch ($deploy->project->type)
         {
             case ProjectType::LARAVEL:
-                return new LaravelDeployer($this->console, $deploy);
+                return new LaravelDeployer($deploy);
             case ProjectType::STATIC_PAGES:
-                return new StaticPagesDeployer($this->console, $deploy);
+                return new StaticPagesDeployer($deploy);
             default:
-                return new BaseDeployer($this->console, $deploy);
+                return new BaseDeployer($deploy);
         }
     }
 }
