@@ -54,6 +54,42 @@ class ConnectionsController extends Controller
         return redirect(action('ConnectionsController@index'));
     }
 
+    public function edit(Connection $connection)
+    {
+        $supportedConnectionMethods = [
+            Configuration::AUTH_BY_IDENTITY_FILE => 'Authenticate by public key',
+            Configuration::AUTH_BY_PASSWORD => 'Authenticate by credentials'
+        ];
+
+        $publicKey = app(RemoteConsole::class)->getPublicKey();
+
+        return view('connections.edit', compact('connection', 'supportedConnectionMethods', 'publicKey'));
+    }
+
+    public function update(Connection $connection, Request $request)
+    {
+        $connection->name = $request->get('name');
+        $connection->hostname = $request->get('hostname');
+        $connection->method = $request->get('method');
+        $connection->username = $request->get('username');
+
+        if ($connection->method == Configuration::AUTH_BY_PASSWORD) {
+            $connection->password = $request->has('password') ? $request->get('password') : null;
+        }
+
+        $connection->saveOrFail();
+
+        flash('Connection has been updated', 'success');
+        return redirect(action('ConnectionsController@index'));
+    }
+
+    public function destroy(Connection $connection)
+    {
+        $connection->delete();
+        flash('Connection has been deleted', 'success');
+        return action('ConnectionsController@index');
+    }
+
     public function check(Connection $connection)
     {
         try {

@@ -103,6 +103,7 @@ class ProjectsController extends Controller
 
         $project->saveOrFail();
 
+        flash('Project has been updated', 'success');
         return redirect(action('ProjectsController@show', $project));
     }
 
@@ -110,6 +111,7 @@ class ProjectsController extends Controller
     {
         $project->delete();
 
+        flash('Project has been deleted', 'success');
         return action('ProjectsController@index');
     }
 

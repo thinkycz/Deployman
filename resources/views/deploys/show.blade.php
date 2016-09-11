@@ -17,13 +17,13 @@
                     <li class="list-group-item">
                         <div class="row">
                             <div class="col-md-4 text"><strong>Project:</strong></div>
-                            <div class="col-md-8">{{ $deploy->project->name }}</div>
+                            <div class="col-md-8">{{ $deploy->project ? $deploy->project->name : 'Project deleted' }}</div>
                         </div>
                     </li>
                     <li class="list-group-item">
                         <div class="row">
                             <div class="col-md-4 text"><strong>Repository:</strong></div>
-                            <div class="col-md-8">{{ $deploy->project->repository }}</div>
+                            <div class="col-md-8">{{ $deploy->project ? $deploy->project->repository : 'Project deleted' }}</div>
                         </div>
                     </li>
                     <li class="list-group-item">

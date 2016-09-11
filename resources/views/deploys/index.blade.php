@@ -20,7 +20,7 @@
             @foreach($deploys as $deploy)
                 <tr>
                     <th scope="row">{{ $deploy->id }}</th>
-                    <td><a href="{{ action('DeploysController@show', $deploy) }}">{{ $deploy->project->name }}
+                    <td><a href="{{ action('DeploysController@show', $deploy) }}">{{ $deploy->project ? $deploy->project->name : 'Project deleted' }}
                             (rev. {{ substr($deploy->commit_hash, 0, 7) ?: 'unknown' }})</a></td>
                     <td>{{ $deploy->created_at->diffForHumans() }}</td>
                     <td>{{ $deploy->deploy_complete ? $deploy->created_at->diffInSeconds($deploy->finished_at) : '*' }}

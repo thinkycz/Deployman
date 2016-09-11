@@ -18,8 +18,9 @@
                 <col style="width:30%">
                 <col style="width:20%">
                 <col style="width:15%">
-                <col style="width:15%">
-                <col style="width:15%">
+                <col style="width:10%">
+                <col style="width:10%">
+                <col style="width:10%">
             </colgroup>
             <thead>
             <tr>
@@ -29,6 +30,7 @@
                 <th>Authentication</th>
                 <th>Created</th>
                 <th>Status</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -42,6 +44,10 @@
                     <td>
                         <button class="btn btn-xs btn-primary status" data-status-id="{{ $connection->id }}")"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Connecting ...</button>
                     </td>
+                    <td>
+                        <a href="{{ action('ConnectionsController@edit', $connection) }}" class="btn btn-warning btn-xs">Edit</a>
+                        <a href="#" data-connection-id="{{ $connection->id }}" class="connection-delete btn btn-danger btn-xs">Delete</a>
+                    </td>
                 </tr>
             @endforeach
             </tbody>
@@ -51,8 +57,43 @@
 
 @section('scripts')
     <script>
-        var statusBtns = $('.status');
+        $('.connection-delete').click(function () {
+            var btn = $(this);
+            var id = $(this).attr('data-connection-id');
+            var text = $(this).html();
 
+            btn.html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Please wait ...');
+            btn.attr('disabled', true);
+
+            swal({
+                title: "Are you sure?",
+                text: "Do you really want to delete this connection?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DE3D3E",
+                confirmButtonText: "Yes, delete !",
+                closeOnConfirm: false,
+                showLoaderOnConfirm: true
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    $.ajax({
+                        url: '/connections/' + id,
+                        type: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    }).done(function (data) {
+                        window.location.href = data;
+                    }).fail(function (data) {
+                        swal("Delete failed", "Deployman couldn't delete the conneciton.\n\nError: " + data.responseText, "error");
+                    });
+                }
+                btn.html(text);
+                btn.attr('disabled', false);
+            });
+        });
+
+        var statusBtns = $('.status');
         statusBtns.click(function () {
             var id = $(this).attr('data-status-id');
             var btn = $(this);
@@ -77,6 +118,8 @@
             });
         });
 
-        statusBtns.trigger('click');
+        $(document).ready(function () {
+            statusBtns.trigger('click');
+        });
     </script>
 @endsection
