@@ -78,6 +78,41 @@ class ProjectsController extends Controller
         return redirect(action('ProjectsController@index'));
     }
 
+    public function edit(Project $project)
+    {
+        $supportedProjectTypes = [
+            ProjectType::STATIC_PAGES => 'Static pages',
+            ProjectType::LARAVEL => 'Laravel',
+            ProjectType::SYMFONY2 => 'Symfony2',
+            ProjectType::SYMFONY3 => 'Symfony3'
+        ];
+
+        /** @var Collection $connections */
+        $connections = auth()->user()->connections;
+
+        return view('projects.edit', compact('project', 'supportedProjectTypes', 'connections'));
+    }
+
+    public function update(Request $request, Project $project)
+    {
+        $project->name = $request->get('project-name');
+        $project->type = $request->get('project-type');
+        $project->repository = $request->get('repository');
+        $project->path = $request->get('path');
+        $project->connection_id = $request->get('connection');
+
+        $project->saveOrFail();
+
+        return redirect(action('ProjectsController@show', $project));
+    }
+
+    public function destroy(Project $project)
+    {
+        $project->delete();
+
+        return action('ProjectsController@index');
+    }
+
     public function check(Project $project)
     {
         return $this->checkRepositoryConnection($project);

@@ -37,7 +37,7 @@
                     <th scope="row">{{ $connection->id }}</th>
                     <td>{{ $connection->name }}</td>
                     <td>{{ $connection->hostname }}</td>
-                    <td>{{ $connection->method == 0 ? 'Password' : 'Private key'}}</td>
+                    <td>{{ $connection->method == 0 ? 'Password' : 'Public key'}}</td>
                     <td>{{ $connection->created_at->diffForHumans() }}</td>
                     <td>
                         <button class="btn btn-xs btn-primary status" data-status-id="{{ $connection->id }}")"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Connecting ...</button>

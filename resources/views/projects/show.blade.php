@@ -5,7 +5,14 @@
         <div class="col-md-8">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Project information</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="panel-title">Project information</h3>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <a href="{{ action('ProjectsController@edit', $project) }}" class="btn btn-xs btn-warning">Edit this project</a>
+                        </div>
+                    </div>
                 </div>
                 <ul class="list-group">
                     <li class="list-group-item">
@@ -248,6 +255,42 @@
             var branch = branchBtn.val() ? branchBtn.val() : 'master';
 
             button.html('<span class="glyphicon glyphicon-cloud-upload"></span> Deploy ' + commit + ' from ' + branch);
+        });
+
+        $('#delete-project').click(function () {
+            var btn = $(this);
+            var id = $(this).attr('data-project-id');
+            var text = $(this).html();
+
+            btn.html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Please wait ...');
+            btn.attr('disabled', true);
+
+            swal({
+                title: "Are you sure?",
+                text: "Do you really want to delete this project?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DE3D3E",
+                confirmButtonText: "Yes, delete !",
+                closeOnConfirm: false,
+                showLoaderOnConfirm: true
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    $.ajax({
+                        url: '/projects/' + id,
+                        type: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    }).done(function (data) {
+                        window.location.href = data;
+                    }).fail(function (data) {
+                        swal("Delete failed", "Deployman couldn't delete the project.\n\nError: " + data.responseText, "error");
+                    });
+                }
+                btn.html(text);
+                btn.attr('disabled', false);
+            });
         });
 
         $('#rollback-project').click(function () {
