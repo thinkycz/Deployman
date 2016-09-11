@@ -44,7 +44,7 @@
             <table class="table">
                 @if($deploy->log)
                     @foreach(unserialize($deploy->log) as $line)
-                        @if($line)
+                        @if(trim($line))
                             <tr>
                                 @if(strpos($line, 'INFO') !== false)
                                     <td class="text-primary"><strong>{{ $line }}</strong></td>
