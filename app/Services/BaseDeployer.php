@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Deploy;
 use App\Helpers\DeployStatus;
 use App\Project;
+use Deployer\Type\Result;
 use RuntimeException;
 
 /**
@@ -69,6 +70,19 @@ class BaseDeployer extends ProjectManager
         }
 
         return $composer;
+    }
+
+    protected function parseAndLogExceptionMessage($message)
+    {
+        $result = new Result($message);
+
+        foreach ($result->toArray() as $line) {
+            $this->deploy->addToLog($line);
+        }
+
+        $this->deploy->save();
+
+        return $this->deploy;
     }
 
     /**

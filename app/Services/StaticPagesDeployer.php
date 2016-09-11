@@ -20,8 +20,7 @@ class StaticPagesDeployer extends BaseDeployer
     {
         $this->deploy->setStatus(DeployStatus::RUNNING);
 
-        try
-        {
+        try {
             $this->prepareToDeploy();
             $this->prepareReleaseFolders();
             $this->pullCodeFromGit();
@@ -29,12 +28,11 @@ class StaticPagesDeployer extends BaseDeployer
             $this->createSymlinksToSharedResources($this->sharedDirs, $this->sharedFiles);
             $this->makeDirectoriesWritable($this->writableDirs);
             $this->createSymlinkToCurrent();
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $this->deploy->setFinished();
             $this->deploy->setStatus(DeployStatus::FAILED);
-            $this->deploy->addToLog('ERROR: ' . $e->getMessage());
+            $this->deploy->addToLog('ERROR: Deployment failed. Please check the log below for more information.');
+            $this->parseAndLogExceptionMessage($e->getMessage());
             return $this->deploy;
         }
 

@@ -39,7 +39,8 @@ class SymfonyDeloyer extends BaseDeployer
         } catch (Exception $e) {
             $this->deploy->setFinished();
             $this->deploy->setStatus(DeployStatus::FAILED);
-            $this->deploy->addToLog('ERROR: ' . $e->getMessage());
+            $this->deploy->addToLog('ERROR: Deployment failed. Please check the log below for more information.');
+            $this->parseAndLogExceptionMessage($e->getMessage());
             return $this->deploy;
         }
 
