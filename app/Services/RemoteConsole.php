@@ -73,7 +73,7 @@ class RemoteConsole
     public function withCredentials($username, $password)
     {
         $this->config->setUser($username);
-        $this->password($password);
+        $this->password(decrypt($password));
         $this->server = new PhpSecLib($this->config);
 
         return $this;
@@ -138,7 +138,7 @@ class RemoteConsole
     public function withIdentityFileAndPassword($publicKeyFile = '~/.ssh/id_rsa.pub', $privateKeyFile = '~/.ssh/id_rsa', $passPhrase = '', $password = null)
     {
         $this->withIdentityFile($publicKeyFile, $privateKeyFile, $passPhrase);
-        $this->password($password);
+        $this->password(decrypt($password));
         $this->config->setAuthenticationMethod(Configuration::AUTH_BY_IDENTITY_FILE_AND_PASSWORD);
         $this->server = new PhpSecLib($this->config);
 

@@ -47,7 +47,7 @@ class ConnectionsController extends Controller
         ]);
 
         if ($connection->method == Configuration::AUTH_BY_PASSWORD) {
-            $connection->password = $request->has('password') ? $request->get('password') : null;
+            $connection->password = $request->has('password') ? encrypt($request->get('password')) : null;
             $connection->save();
         }
 
@@ -74,7 +74,7 @@ class ConnectionsController extends Controller
         $connection->username = $request->get('username');
 
         if ($connection->method == Configuration::AUTH_BY_PASSWORD) {
-            $connection->password = $request->has('password') ? $request->get('password') : null;
+            $connection->password = $request->has('password') ? encrypt($request->get('password')) : null;
         }
 
         $connection->saveOrFail();

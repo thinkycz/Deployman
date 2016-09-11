@@ -48,7 +48,7 @@
                 <div class="form-group">
                     <label class="col-md-4 control-label" for="password">Password</label>
                     <div class="col-md-4">
-                        <input id="password" name="password" type="text" placeholder="* * * * * *" class="form-control input-md" @keyPress="passwordTyped" required="" value="{{ $connection->password }}">
+                        <input id="password" name="password" type="password" placeholder="* * * * * *" class="form-control input-md" @keyPress="passwordTyped" required="" value="{{ $connection->password }}">
                         <span class="help-block">Enter the password</span>
                     </div>
                 </div>
@@ -87,7 +87,7 @@
                         this.password = true;
                         swal({
                             title: "Important!",
-                            text: "Your password will be stored in our database in a human readable form! Unsalted, unencrypted! Deployman will use this password to SSH to your server.\n\nWe strongly recommend using public key authentication.",
+                            text: "Your password will be encrypted with a symmetric key and stored in the database! This means that the hash will be possible to decrypt. Deployman will use this password to SSH to your server.\n\nWe !!!strongly!!! recommend using public key authentication.",
                             type: "info",
                             confirmButtonText: "I understand"
                         });
