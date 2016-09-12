@@ -92,5 +92,27 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Run post-deploy commands</h3>
+                </div>
+                <div class="panel-body">
+                    <br>
+                    @foreach(array_chunk($methods, 4) as $row)
+                        <div class="row">
+                            @foreach($row as $method)
+                                <div class="col-md-3">
+                                    <button class="btn btn-default form-control">{{ $method['description'] }}</button>
+                                </div>
+                            @endforeach
+                        </div>
+                        <br>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
     @include('partials.terminal_log')
 @endsection

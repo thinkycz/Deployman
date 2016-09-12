@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Deploy;
+use App\Helpers\AfterDeployMethods;
 use App\Helpers\ProjectType;
 use App\Services\BaseDeployer;
 use App\Services\LaravelDeployer;
 use App\Services\StaticPagesDeployer;
 use App\Services\Symfony3Deployer;
 use App\Services\SymfonyDeloyer;
+use ReflectionClass;
+use ReflectionMethod;
 
 class DeploysController extends Controller
 {
@@ -29,7 +32,14 @@ class DeploysController extends Controller
 
     public function show(Deploy $deploy)
     {
-        return view('deploys.show', compact('deploy'));
+        $methods = array_map(function ($method) {
+            return [
+                'method' => $method,
+                'description' => AfterDeployMethods::$methodDescriptions[$method->name]
+            ];
+        }, $this->getProjectAdditionalActions($deploy));
+
+        return view('deploys.show', compact('deploy', 'methods'));
     }
 
     public function fire(Deploy $deploy)
@@ -59,17 +69,49 @@ class DeploysController extends Controller
      */
     private function determineProjectDeployer(Deploy $deploy)
     {
+        $deployer = $this->getProjectDeployerClass($deploy);
+
+        if (!$deployer) {
+            return null;
+        }
+
+        return new $deployer($deploy);
+    }
+
+    private function getProjectDeployerClass(Deploy $deploy)
+    {
         switch ($deploy->project->type) {
             case ProjectType::LARAVEL:
-                return new LaravelDeployer($deploy);
+                return LaravelDeployer::class;
             case ProjectType::SYMFONY2:
-                return new SymfonyDeloyer($deploy);
+                return SymfonyDeloyer::class;
             case ProjectType::SYMFONY3:
-                return new Symfony3Deployer($deploy);
+                return Symfony3Deployer::class;
             case ProjectType::STATIC_PAGES:
-                return new StaticPagesDeployer($deploy);
+                return StaticPagesDeployer::class;
             default:
-                return new BaseDeployer($deploy);
+                return BaseDeployer::class;
         }
+    }
+
+    private function getProjectAdditionalActions(Deploy $deploy)
+    {
+        $deployer = $this->getProjectDeployerClass($deploy);
+
+        if (!$deployer) {
+            return [];
+        }
+
+        $reflectionClass = new ReflectionClass($deployer);
+        $methods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
+
+        return array_filter($methods, function ($method) use ($deployer) {
+
+            if ($deployer == Symfony3Deployer::class) {
+                return ($method->class == $deployer or $method->class == SymfonyDeloyer::class) and $method->name != 'run';
+            }
+
+            return $method->class == $deployer and $method->name != 'run';
+        });
     }
 }
