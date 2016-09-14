@@ -266,7 +266,7 @@ class RemoteConsole
     public function getPublicKey()
     {
         $this->connectToLocalhost();
-        return $this->run("sudo cat ~/.ssh/id_rsa.pub");
+        return $this->run("cat ~/.ssh/id_rsa.pub");
     }
 
     /**
