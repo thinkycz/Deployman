@@ -10,6 +10,7 @@ use App\Services\LaravelDeployer;
 use App\Services\StaticPagesDeployer;
 use App\Services\Symfony3Deployer;
 use App\Services\SymfonyDeloyer;
+use Illuminate\Http\Request;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -61,6 +62,21 @@ class DeploysController extends Controller
             'deploy' => $deploy,
             'queue' => $queue
         ];
+    }
+
+    public function postDeployCommand(Request $request, Deploy $deploy)
+    {
+        $method_class = $request->get('method_class');
+        $method_name = $request->get('method_name');
+
+        try {
+            $deployer = new $method_class($deploy);
+            $deployer->$method_name();
+        } catch (\Exception $e) {
+            return response('error', 400);
+        }
+
+        return response('success', 200);
     }
 
     /**

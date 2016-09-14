@@ -24,6 +24,7 @@ Route::get('/projects/{project}/getCurrentDeploy', 'ProjectsController@getCurren
 
 Route::get('/deploys/{deploy}/fire', 'DeploysController@fire');
 Route::get('/deploys/{deploy}/status', 'DeploysController@status');
+Route::post('/deploys/{deploy}/postDeployCommand', 'DeploysController@postDeployCommand');
 
 Route::resource('connections', 'ConnectionsController');
 Route::resource('projects', 'ProjectsController');

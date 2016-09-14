@@ -48,7 +48,7 @@
                 <div class="form-group">
                     <label class="col-md-4 control-label" for="password">Password</label>
                     <div class="col-md-4">
-                        <input id="password" name="password" type="password" placeholder="* * * * * *" class="form-control input-md" @keyPress="passwordTyped" required="" value="{{ $connection->password }}">
+                        <input id="password" name="password" type="password" placeholder="* * * * * *" class="form-control input-md" @keyPress="passwordTyped"  required="" value="{{ $connection->password }}">
                         <span class="help-block">Enter the password</span>
                     </div>
                 </div>

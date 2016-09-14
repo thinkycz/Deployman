@@ -104,7 +104,11 @@
                         <div class="row">
                             @foreach($row as $method)
                                 <div class="col-md-3">
-                                    <button class="btn btn-default form-control">{{ $method['description'] }}</button>
+                                    <form class="ajaxForm" method="post" action="{{ action('DeploysController@postDeployCommand', $deploy) }}">
+                                        <input type="hidden" name="method_name" value="{{ $method['method']->name }}">
+                                        <input type="hidden" name="method_class" value="{{ $method['method']->class }}">
+                                        <input type="submit" class="btn btn-default form-control" value="{{ $method['description'] }}">
+                                    </form>
                                 </div>
                             @endforeach
                         </div>
@@ -115,4 +119,43 @@
         </div>
     </div>
     @include('partials.terminal_log')
+@endsection
+
+@section('scripts')
+    <script>
+        $('form.ajaxForm').submit(function (event) {
+            event.preventDefault();
+            var form = $(this);
+
+            swal({
+                title: "Are you sure?",
+                text: "Do you really want to run this command?",
+                type: "info",
+                showCancelButton: true,
+                confirmButtonColor: "#336699",
+                confirmButtonText: "Run this command",
+                closeOnConfirm: false,
+                showLoaderOnConfirm: true
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    $.ajax({
+                        url: form.attr('action'),
+                        type: form.attr('method'),
+                        data: form.serialize(),
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    }).done(function() {
+                        swal("Success!", "Please check the result in the log.", "success");
+                    }).fail(function() {
+                        swal("Failed!", "Please check the result in the log.", "error");
+                    }).always(function () {
+                        setTimeout(function () {
+                            location.reload();
+                        }, 3000);
+                    });
+                }
+            });
+        });
+    </script>
 @endsection
