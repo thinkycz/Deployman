@@ -46,12 +46,7 @@ class ProjectsController extends Controller
 
     public function create()
     {
-        $supportedProjectTypes = [
-            ProjectType::STATIC_PAGES => 'Static pages',
-            ProjectType::LARAVEL => 'Laravel',
-            ProjectType::SYMFONY2 => 'Symfony2',
-            ProjectType::SYMFONY3 => 'Symfony3'
-        ];
+        $supportedProjectTypes = $this->getProjectTypes();
 
         /** @var Collection $connections */
         $connections = auth()->user()->connections;
@@ -80,12 +75,7 @@ class ProjectsController extends Controller
 
     public function edit(Project $project)
     {
-        $supportedProjectTypes = [
-            ProjectType::STATIC_PAGES => 'Static pages',
-            ProjectType::LARAVEL => 'Laravel',
-            ProjectType::SYMFONY2 => 'Symfony2',
-            ProjectType::SYMFONY3 => 'Symfony3'
-        ];
+        $supportedProjectTypes = $this->getProjectTypes();
 
         /** @var Collection $connections */
         $connections = auth()->user()->connections;
@@ -164,5 +154,16 @@ class ProjectsController extends Controller
         }
 
         return response('success');
+    }
+
+    private function getProjectTypes()
+    {
+        return [
+            ProjectType::STATIC_PAGES => 'Static pages',
+            ProjectType::LARAVEL => 'Laravel',
+            ProjectType::SYMFONY2 => 'Symfony2',
+            ProjectType::SYMFONY3 => 'Symfony3',
+            ProjectType::OCTOBER => 'October CMS'
+        ];
     }
 }

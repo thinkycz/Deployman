@@ -7,6 +7,7 @@ use App\Helpers\AfterDeployMethods;
 use App\Helpers\ProjectType;
 use App\Services\BaseDeployer;
 use App\Services\LaravelDeployer;
+use App\Services\OctoberDeployer;
 use App\Services\StaticPagesDeployer;
 use App\Services\Symfony3Deployer;
 use App\Services\SymfonyDeloyer;
@@ -105,6 +106,8 @@ class DeploysController extends Controller
                 return Symfony3Deployer::class;
             case ProjectType::STATIC_PAGES:
                 return StaticPagesDeployer::class;
+            case ProjectType::OCTOBER:
+                return OctoberDeployer::class;
             default:
                 return BaseDeployer::class;
         }
