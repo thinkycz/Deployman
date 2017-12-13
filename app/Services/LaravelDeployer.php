@@ -24,6 +24,7 @@ class LaravelDeployer extends BaseDeployer
             $this->copyDirectories($this->copyDirs);
             $this->createSymlinksToSharedResources($this->sharedDirs, $this->sharedFiles);
             $this->makeDirectoriesWritable($this->writableDirs);
+            $this->createStorageFrameworkFolder();
             $this->installVendors($this->envVars);
             $this->createSymlinkToCurrent();
             $this->clearCache();
@@ -129,5 +130,17 @@ class LaravelDeployer extends BaseDeployer
 
         // Symlink shared dir to release dir
         $this->console->runAndLog("ln -nfs $this->deployPath/shared/storage/app/public $this->releasePath/public/storage", $this->deploy);
+    }
+
+    public function createStorageFrameworkFolder()
+    {
+        $this->deploy->addToLog('INFO: Creating storage/framework folders.');
+
+        // Create shared dir if it does not exist.
+        $this->console->runAndLog("mkdir -p $this->deployPath/shared/storage/framework", $this->deploy);
+
+        $this->console->runAndLog("mkdir -p $this->deployPath/shared/storage/framework/sessions", $this->deploy);
+        $this->console->runAndLog("mkdir -p $this->deployPath/shared/storage/framework/views", $this->deploy);
+        $this->console->runAndLog("mkdir -p $this->deployPath/shared/storage/framework/cache", $this->deploy);
     }
 }
