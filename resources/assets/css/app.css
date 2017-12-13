@@ -1,39 +1,53 @@
 .glyphicon-refresh-animate {
   -animation: spin .7s infinite linear;
-  -webkit-animation: spin2 .7s infinite linear; }
+  -webkit-animation: spin2 .7s infinite linear;
+}
 
 @-webkit-keyframes spin2 {
   from {
-    -webkit-transform: rotate(0deg); }
+    -webkit-transform: rotate(0deg);
+  }
   to {
-    -webkit-transform: rotate(360deg); } }
+    -webkit-transform: rotate(360deg);
+  }
+}
 
 @-webkit-keyframes spin {
   from {
     -webkit-transform: scale(1) rotate(0deg);
-    transform: scale(1) rotate(0deg); }
+    transform: scale(1) rotate(0deg);
+  }
   to {
     -webkit-transform: scale(1) rotate(360deg);
-    transform: scale(1) rotate(360deg); } }
+    transform: scale(1) rotate(360deg);
+  }
+}
 
 @keyframes spin {
   from {
     -webkit-transform: scale(1) rotate(0deg);
-    transform: scale(1) rotate(0deg); }
+    transform: scale(1) rotate(0deg);
+  }
   to {
     -webkit-transform: scale(1) rotate(360deg);
-    transform: scale(1) rotate(360deg); } }
+    transform: scale(1) rotate(360deg);
+  }
+}
 
 .navbar-brand {
-  padding: 13px 15px; }
+  padding: 13px 15px;
+}
 
 .navbar-nav {
-  margin-left: 20px; }
+  margin-left: 20px;
+}
 
 .navbar-static-top {
-  z-index: 100; }
+  z-index: 100;
+}
 
 .active {
-  background-color: lightgray; }
+  background-color: lightgray;
+}
 
 /*# sourceMappingURL=app.css.map */

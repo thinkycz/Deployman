@@ -184,7 +184,12 @@ class RemoteConsole
             $command = "cd $this->workingPath && $command";
         }
 
-        $output = $this->server->run($command);
+        try {
+            $output = $this->server->run($command);
+        } catch (\Exception $e) {
+            $output = $e->getMessage();
+        }
+
         $result = new Result($output);
 
         $deploy->addToLog('COMMAND: ' . $command);

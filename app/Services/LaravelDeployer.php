@@ -29,6 +29,8 @@ class LaravelDeployer extends BaseDeployer
             $this->clearCache();
             $this->configCache();
         } catch (Exception $e) {
+            var_dump($e);
+
             $this->deploy->setFinished();
             $this->deploy->setStatus(DeployStatus::FAILED);
             $this->deploy->addToLog('ERROR: Deployment failed. Please check the log below for more information.');
